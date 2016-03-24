@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.user.rideshareapp1.dashboard"
+    android:background="@android:drawable/screen_background_dark_transparent">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/gridView">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_row="14"
+            android:layout_column="10">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="350dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal">
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:text="Post shared ride"
+                    android:id="@+id/share_button" />
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:text="I want to drive!"
+                    android:id="@+id/driver_button" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="350dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center_horizontal">
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:text="Search"
+                    android:id="@+id/search_button" />
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:text="My Rides"
+                    android:id="@+id/myrides_button" />
+            </LinearLayout>
+        </LinearLayout>
+    </GridLayout>
+</RelativeLayout>

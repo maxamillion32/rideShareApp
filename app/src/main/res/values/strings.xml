@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ride Share</string>
+    <string name="title_activity_sign_up">signUp</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_dashboard">dashboard</string>
+    <string name="title_activity_share_ride_post">share_ride_post</string>
+    <string name="title_activity_driver_post_ride">driver_post_ride</string>
+    <string name="title_activity_my_rides">my_rides</string>
+    <string name="title_activity_search_form">search_form</string>
+    <string name="title_activity_search_results">search_results</string>
+    <string name="title_activity_ride_details">ride_details</string>
+</resources>
