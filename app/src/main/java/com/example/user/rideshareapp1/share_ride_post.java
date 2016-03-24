@@ -8,8 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,11 +38,12 @@ public class share_ride_post extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_ride_post);
 
-        final EditText origin = (EditText) findViewById(R.id.origin_view);
-        final EditText dest = (EditText) findViewById(R.id.dest_view);
-        final EditText startTime = (EditText) findViewById(R.id.startTime_view);
-        final EditText endTime = (EditText) findViewById(R.id.endTime_view);
-        final EditText capacity = (EditText) findViewById(R.id.capacity_field);
+        final Spinner origin = (Spinner) findViewById(R.id.origin);
+        final Spinner dest = (Spinner) findViewById(R.id.dest);
+        final DatePicker date = (DatePicker) findViewById(R.id.ride_date);
+        final TimePicker startTime = (TimePicker) findViewById(R.id.start_time);
+        final TimePicker endTime = (TimePicker) findViewById(R.id.end_time);
+        final EditText capacity = (EditText) findViewById(R.id.capacity);
         final EditText comments = (EditText) findViewById(R.id.comments_field);
 
         Button shareRide = (Button) findViewById(R.id.startRide);
@@ -57,10 +61,10 @@ public class share_ride_post extends ActionBarActivity {
                 //Post Data
                 List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
                 nameValuePair.add(new BasicNameValuePair("userID", login));
-                nameValuePair.add(new BasicNameValuePair("origin", origin.getText().toString()));
-                nameValuePair.add(new BasicNameValuePair("dest", dest.getText().toString()));
-                nameValuePair.add(new BasicNameValuePair("timeStart", startTime.getText().toString()));
-                nameValuePair.add(new BasicNameValuePair("timeEnd", endTime.getText().toString()));
+                nameValuePair.add(new BasicNameValuePair("origin", origin.getSelectedItem().toString()));
+                nameValuePair.add(new BasicNameValuePair("dest", dest.getSelectedItem().toString()));
+                nameValuePair.add(new BasicNameValuePair("timeStart", startTime.getCurrentHour().toString()));
+                nameValuePair.add(new BasicNameValuePair("timeEnd", endTime.getCurrentHour().toString()));
                 nameValuePair.add(new BasicNameValuePair("capacity", capacity.getText().toString()));
                 nameValuePair.add(new BasicNameValuePair("comments", comments.getText().toString()));
 
