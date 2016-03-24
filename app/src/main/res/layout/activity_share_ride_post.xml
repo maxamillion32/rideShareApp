@@ -66,7 +66,8 @@
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/dest"
         android:layout_alignStart="@+id/dest"
-        android:hint="pick a date"/>
+        android:hint="pick a date"
+        android:inputType="none"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -75,7 +76,8 @@
         android:layout_below="@+id/ride_date"
         android:layout_alignLeft="@+id/ride_date"
         android:layout_alignStart="@+id/ride_date"
-        android:hint="pick a start time"/>
+        android:hint="pick a start time"
+        android:inputType="none"/>
 
     <EditText
         android:layout_width="wrap_content"

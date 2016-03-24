@@ -1,10 +1,11 @@
 package com.example.user.rideshareapp1;
 
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +13,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,7 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class share_ride_post extends ActionBarActivity {
+public class share_ride_post extends Activity {
+
+    private DatePicker datePicker;
+    private int year, month, day;
+    EditText dateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,13 @@ public class share_ride_post extends ActionBarActivity {
 
         final Spinner origin = (Spinner) findViewById(R.id.origin);
         final Spinner dest = (Spinner) findViewById(R.id.dest);
-        final DatePicker date = (DatePicker) findViewById(R.id.ride_date);
-        final TimePicker startTime = (TimePicker) findViewById(R.id.start_time);
-        final TimePicker endTime = (TimePicker) findViewById(R.id.end_time);
+        dateView = (EditText) findViewById(R.id.ride_date);
+        final EditText startTime = (EditText) findViewById(R.id.start_time);
+        final EditText endTime = (EditText) findViewById(R.id.end_time);
         final EditText capacity = (EditText) findViewById(R.id.capacity);
         final EditText comments = (EditText) findViewById(R.id.comments_field);
+
+
 
         Button shareRide = (Button) findViewById(R.id.startRide);
 
@@ -63,8 +70,8 @@ public class share_ride_post extends ActionBarActivity {
                 nameValuePair.add(new BasicNameValuePair("userID", login));
                 nameValuePair.add(new BasicNameValuePair("origin", origin.getSelectedItem().toString()));
                 nameValuePair.add(new BasicNameValuePair("dest", dest.getSelectedItem().toString()));
-                nameValuePair.add(new BasicNameValuePair("timeStart", startTime.getCurrentHour().toString()));
-                nameValuePair.add(new BasicNameValuePair("timeEnd", endTime.getCurrentHour().toString()));
+                nameValuePair.add(new BasicNameValuePair("timeStart", startTime.getText().toString()));
+                nameValuePair.add(new BasicNameValuePair("timeEnd", endTime.getText().toString()));
                 nameValuePair.add(new BasicNameValuePair("capacity", capacity.getText().toString()));
                 nameValuePair.add(new BasicNameValuePair("comments", comments.getText().toString()));
 
@@ -120,13 +127,6 @@ public class share_ride_post extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_share_ride_post, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -139,5 +139,37 @@ public class share_ride_post extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void setDate(View view) {
+        showDialog(999);
+        Toast.makeText(getApplicationContext(), "ca", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        // TODO Auto-generated method stub
+        if (id == 999) {
+            return new DatePickerDialog(this, myDateListener, year, month, day);
+        }
+        return null;
+    }
+
+    private DatePickerDialog.OnDateSetListener myDateListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
+            // TODO Auto-generated method stub
+            // arg1 = year
+            // arg2 = month
+            // arg3 = day
+            showDate(arg1, arg2+1, arg3);
+        }
+    };
+
+    private void showDate(int year, int month, int day) {
+        dateView.setText(new StringBuilder().append(day).append("/")
+                .append(month).append("/").append(year));
     }
 }
