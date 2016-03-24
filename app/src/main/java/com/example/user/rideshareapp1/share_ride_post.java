@@ -51,7 +51,12 @@ public class share_ride_post extends Activity {
         final EditText capacity = (EditText) findViewById(R.id.capacity);
         final EditText comments = (EditText) findViewById(R.id.comments_field);
 
-
+        dateView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setDate();
+            }
+        });
 
         Button shareRide = (Button) findViewById(R.id.startRide);
 
@@ -142,7 +147,7 @@ public class share_ride_post extends Activity {
     }
 
     @SuppressWarnings("deprecation")
-    public void setDate(View view) {
+    public void setDate() {
         showDialog(999);
         Toast.makeText(getApplicationContext(), "ca", Toast.LENGTH_SHORT)
                 .show();
