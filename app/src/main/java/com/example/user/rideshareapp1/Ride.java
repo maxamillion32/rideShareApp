@@ -1,5 +1,7 @@
 package com.example.user.rideshareapp1;
 
+import java.io.IOException;
+
 /**
  * Created by User on 3/4/2016.
  */
@@ -47,6 +49,21 @@ public class Ride {
     public String toString()
     {
         return this.origin + " " + this.dest + " " + this.start + " " + this.end + " " + Integer.toString(this.capacity) + " " + this.comments;
+    }
+
+    public static boolean isOnline() {
+
+        Runtime runtime = Runtime.getRuntime();
+        try {
+
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 https://rideshare-server-yosef456.c9users.io/");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false;
     }
 }
 

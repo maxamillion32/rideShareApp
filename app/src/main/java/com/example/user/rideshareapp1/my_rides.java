@@ -121,9 +121,6 @@ public class my_rides extends Activity {
 }
 
 class getMyRides extends AsyncTask<Void, Void, Boolean> {
-
-
-
     String login;
     ArrayList<Ride> myRides;
     ListView list;

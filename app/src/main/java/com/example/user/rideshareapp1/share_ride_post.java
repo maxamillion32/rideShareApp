@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -37,16 +38,14 @@ public class share_ride_post extends Activity {
 
     private DatePicker datePicker;
     private int year, month, day;
-    EditText dateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_ride_post);
 
-        final Spinner origin = (Spinner) findViewById(R.id.origin);
-        final Spinner dest = (Spinner) findViewById(R.id.dest);
-        dateView = (EditText) findViewById(R.id.ride_date);
+        final Spinner rideType = (Spinner) findViewById(R.id.rideType);
+        EditText dateView = (EditText) findViewById(R.id.ride_date);
         final EditText startTime = (EditText) findViewById(R.id.start_time);
         final EditText endTime = (EditText) findViewById(R.id.end_time);
         final EditText capacity = (EditText) findViewById(R.id.end_time);
@@ -192,4 +191,39 @@ public class share_ride_post extends Activity {
         dateView.setText(new StringBuilder().append(day).append("/")
                 .append(month).append("/").append(year));
     }
+}
+
+class PostRide extends AsyncTask<Void, Void, Boolean> {
+
+    Ride ride;
+
+    TextView error;
+
+    public PostRide(Ride ride,TextView error){
+        this.ride = ride;
+        this.error = error;
+    }
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+
+        return Ride.isOnline() && postRideToServer();
+    }
+
+    protected Boolean postRideToServer(){
+        return false;
+    }
+
+    @Override
+    protected void onPostExecute(final Boolean success) {
+
+
+
+    }
+
+    @Override
+    protected void onCancelled() {
+
+    }
+
 }
