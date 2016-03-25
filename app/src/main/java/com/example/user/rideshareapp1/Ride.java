@@ -7,23 +7,23 @@ import java.io.IOException;
  */
 public class Ride {
 
-    int id;
-    String userID;
-    String origin;
-    String dest;
-    String start;
-    String end;
-    String taxiType;
-    Boolean menOnly;
-    Boolean womenOnly;
-    int capacity;
-    String comments;
+    private int id;
+    private int userID;
+    private String origin;
+    private String dest;
+    private String date;
+    private String start;
+    private String end;
+    private String taxiType;
+    private int capacity;
+    private String comments;
 
-    public Ride(int id, String UserID, String origin, String dest, String start, String end, int capacity,String comments){
+    public Ride(int id, int UserID, String origin, String date ,String dest, String start, String end, int capacity,String comments){
         this.id=id;
         this.userID=UserID;
         this.origin=origin;
         this.dest=dest;
+        this.date = date;
         this.start=start;
         this.end=end;
         this.capacity=capacity;
@@ -42,8 +42,20 @@ public class Ride {
     public String getTimeEnd(){
         return this.end;
     }
-    public String getDriver(){
+    public int getDriver(){
         return this.userID;
+    }
+
+    public String getDate(){
+        return this.date;
+    }
+
+    public int getCapacity(){
+        return this.capacity;
+    }
+
+    public String getComments(){
+        return this.comments;
     }
 
     public String toString()

@@ -11,7 +11,7 @@ import android.widget.Button;
 
 public class dashboard extends ActionBarActivity {
 
-    private String login;
+    private int login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +19,7 @@ public class dashboard extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        login = getIntent().getExtras().getString("login");
+        login = getIntent().getExtras().getInt("login");
 
         Button share = (Button) findViewById(R.id.share_button);
         Button driver = (Button) findViewById(R.id.driver_button);

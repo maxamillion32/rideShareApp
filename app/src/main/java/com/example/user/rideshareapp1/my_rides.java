@@ -192,10 +192,10 @@ class getMyRides extends AsyncTask<Void, Void, Boolean> {
 
             String [] details = singleRide.split(" ");
 
-            myRides.add(new Ride(Integer.parseInt(details[0]),details[1],
+            /**myRides.add(new Ride(Integer.parseInt(details[0]),details[1],
                     details[2],details[3],details[4] + details[5] +details[6] + details[7] + details[8] + details[9] +details[10],
                     details[11] + details[12] +details[13] + details[14] +details[15] + details[16] + details[17] ,
-                    Integer.parseInt(details[6]),details[7]));
+                    Integer.parseInt(details[6]),details[7]));**/
 
             Log.i("RESPONSE" ,"ride: " + singleRide );
         }
