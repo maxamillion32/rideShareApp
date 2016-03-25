@@ -17,7 +17,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -43,6 +42,8 @@ public class share_ride_post extends Activity {
     private TextView dateView;
     private TextView timeView;
     private int year,month,day,hour,minute;
+    private String timeStart,timeEnd;
+    Boolean timeStartFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +62,24 @@ public class share_ride_post extends Activity {
 
         TextView errors = (TextView) findViewById(R.id.error);
 
+        errors.setText("");
+
         Button setDate = (Button) findViewById(R.id.setDate);
         Button setTimeStart = (Button) findViewById(R.id.timeStart);
         Button setTimeEnd = (Button) findViewById(R.id.timeEnd);
+        Button cancel = (Button) findViewById(R.id.btnCancel);
 
         Calendar  calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
 
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
-        showDate(year, month+1, day);
+        showDate(year, month + 1, day);
+
+        timeStart = "00:00";
+        timeEnd = "23:59";
+
+        timeView.setText(timeStart + " - " + timeEnd);
 
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,18 +91,29 @@ public class share_ride_post extends Activity {
         setTimeStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                timeStartFlag = true;
                 setTime();
+
             }
         });
 
         setTimeEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                timeStartFlag = false;
                 setTime();
+
             }
         });
 
-        fillSpinners(origin,dest,rideType);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        fillSpinners(origin, dest, rideType);
 
         Button shareRide = (Button) findViewById(R.id.btnSubmit);
 
@@ -123,11 +143,11 @@ public class share_ride_post extends Activity {
         dest.setAdapter(placeAdapter);
 
         List<String> types = new ArrayList<String>();
-        places.add("Driver");
-        places.add("Taxi");
-        places.add("Uber");
-        places.add("Lyft");
-        places.add("Ride");
+        types.add("Driver");
+        types.add("Taxi");
+        types.add("Uber");
+        types.add("Lyft");
+        types.add("Ride");
         ArrayAdapter<String> typesAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, types);
         typesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -152,14 +172,11 @@ public class share_ride_post extends Activity {
     @SuppressWarnings("deprecation")
     public void setDate() {
         showDialog(999);
-        Toast.makeText(getApplicationContext(), "ca", Toast.LENGTH_SHORT)
-                .show();
     }
 
     public void setTime() {
         showDialog(888);
-        Toast.makeText(getApplicationContext(), "ca", Toast.LENGTH_SHORT)
-                .show();
+        
     }
 
     @Override
@@ -169,8 +186,9 @@ public class share_ride_post extends Activity {
             return new DatePickerDialog(this, myDateListener, year, month, day);
         }
         else if (id == 888){
-            return new TimePickerDialog(this, myTimeListener, hour, minute, true);
+            return new TimePickerDialog(this, myTimeListener, hour, minute, false);
         }
+
         return null;
     }
 
@@ -188,7 +206,13 @@ public class share_ride_post extends Activity {
     private TimePickerDialog.OnTimeSetListener myTimeListener = new TimePickerDialog.OnTimeSetListener(){
         @Override
         public void onTimeSet(TimePicker timePicker, int i, int i1) {
-            showTime(i,i1);
+
+            if (timeStartFlag)
+                timeStart = (i1<10) ? i+ ":0" + i1 : i + ":" + i1;
+            else
+                timeEnd = (i1<10) ? i+ ":0" + i1 : i + ":" + i1;
+
+            showTime();
         }
     };
 
@@ -197,9 +221,9 @@ public class share_ride_post extends Activity {
                 .append(month).append("/").append(year));
     }
 
-    private void showTime(int h, int m){
-        timeView.setText(new StringBuilder().append(h).append(":")
-                .append(m));
+    private void showTime(){
+        timeView.setText(new StringBuilder().append(timeStart).append("-")
+                .append(timeEnd));
     }
 
     class PostRide extends AsyncTask<Void, Void, Boolean> {

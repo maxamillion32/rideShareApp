@@ -85,7 +85,7 @@ public class my_rides extends Activity {
         Runtime runtime = Runtime.getRuntime();
         try {
 
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 https://rideshare-server-yosef456.c9users.io/");
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
             int     exitValue = ipProcess.waitFor();
             return (exitValue == 0);
 
