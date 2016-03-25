@@ -40,7 +40,7 @@
             <Spinner
                 android:layout_width="113dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/origin"
+                android:id="@+id/search_origin"
                 android:spinnerMode="dialog" />
 
             <TextView
@@ -52,7 +52,7 @@
             <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dest"
+                android:id="@+id/search_dest"
                 android:layout_weight="1"
                 android:spinnerMode="dialog" />
 
@@ -77,14 +77,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="SET DATE"
-                android:id="@+id/setDate"/>
+                android:id="@+id/search_setDate"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Large Text"
-                android:id="@+id/dateView"
+                android:id="@+id/search_dateView"
                 android:paddingLeft="20dp" />
 
             <LinearLayout
@@ -115,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="TIME START"
-                android:id="@+id/timeStart"
+                android:id="@+id/search_timeStart"
                 android:paddingLeft="5dp"
                 android:layout_marginLeft="10dp" />
 
@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="TIME END"
-                android:id="@+id/timeEnd"
+                android:id="@+id/search_timeEnd"
                 android:paddingLeft="5dp"
                 android:layout_marginLeft="10dp" />
 
@@ -132,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Large Text"
-                android:id="@+id/timeView"
+                android:id="@+id/search_timeView"
                 android:paddingLeft="5dp"/>
 
 
@@ -145,17 +145,17 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btnCancel"
+                android:id="@+id/search_btnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="5"
                 android:text="Cancel"
                 android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/btnSubmit"
-                android:layout_toStartOf="@+id/btnSubmit" />
+                android:layout_toLeftOf="@+id/search_btnSubmit"
+                android:layout_toStartOf="@+id/search_btnSubmit" />
 
             <Button
-                android:id="@+id/btnSubmit"
+                android:id="@+id/search_btnSubmit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="5"

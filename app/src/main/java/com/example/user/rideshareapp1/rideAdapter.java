@@ -29,10 +29,10 @@ public class rideAdapter extends ArrayAdapter<Ride> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.ride_row_adapter, parent, false);
 
-        TextView origin = (TextView) rowView.findViewById(R.id.origin);
-        TextView dest = (TextView) rowView.findViewById(R.id.dest);
-        TextView timeStart = (TextView) rowView.findViewById(R.id.timeStart);
-        TextView timeEnd = (TextView) rowView.findViewById(R.id.timeEnd);
+        TextView origin = (TextView) rowView.findViewById(R.id.search_origin);
+        TextView dest = (TextView) rowView.findViewById(R.id.search_dest);
+        TextView timeStart = (TextView) rowView.findViewById(R.id.search_timeStart);
+        TextView timeEnd = (TextView) rowView.findViewById(R.id.search_timeEnd);
         TextView driver = (TextView) rowView.findViewById(R.id.driver);
 
         origin.setText(values.get(position).getOrigin() + "   ");

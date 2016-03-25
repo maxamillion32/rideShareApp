@@ -53,8 +53,8 @@ public class share_ride_post extends Activity {
         login = getIntent().getExtras().getInt("login");
 
         Spinner rideType = (Spinner) findViewById(R.id.rideType);
-        Spinner origin = (Spinner) findViewById(R.id.origin);
-        Spinner dest = (Spinner) findViewById(R.id.dest);
+        Spinner origin = (Spinner) findViewById(R.id.search_origin);
+        Spinner dest = (Spinner) findViewById(R.id.search_dest);
         dateView = (TextView) findViewById(R.id.dateView);
         timeView = (TextView) findViewById(R.id.timeView);
         EditText capacity = (EditText) findViewById(R.id.capacity);
@@ -65,8 +65,8 @@ public class share_ride_post extends Activity {
         errors.setText("");
 
         Button setDate = (Button) findViewById(R.id.setDate);
-        Button setTimeStart = (Button) findViewById(R.id.timeStart);
-        Button setTimeEnd = (Button) findViewById(R.id.timeEnd);
+        Button setTimeStart = (Button) findViewById(R.id.search_timeStart);
+        Button setTimeEnd = (Button) findViewById(R.id.search_timeEnd);
         Button cancel = (Button) findViewById(R.id.btnCancel);
 
         Calendar  calendar = Calendar.getInstance();
@@ -115,7 +115,7 @@ public class share_ride_post extends Activity {
 
         fillSpinners(origin, dest, rideType);
 
-        Button shareRide = (Button) findViewById(R.id.btnSubmit);
+        Button shareRide = (Button) findViewById(R.id.search_btnSubmit);
 
         final String login = getIntent().getStringExtra("login");
 
@@ -226,15 +226,20 @@ public class share_ride_post extends Activity {
                 .append(timeEnd));
     }
 
-    class PostRide extends AsyncTask<Void, Void, Boolean> {
+    class SearchRide extends AsyncTask<Void, Void, Boolean> {
 
-        Ride ride;
+        private String origin;
+        private String dest;
+        private String date;
+        private String timeStart;
+        private String timeEnd;
 
-        TextView error;
-
-        public PostRide(Ride ride,TextView error){
-            this.ride = ride;
-            this.error = error;
+        public SearchRide(String origin, String dest, String date, String timeStart, String timeEnd){
+            this.origin = origin;
+            this.dest = dest;
+            this.date = date;
+            this.timeStart = timeStart;
+            this.timeEnd = timeEnd;
         }
 
         @Override
@@ -246,19 +251,17 @@ public class share_ride_post extends Activity {
         protected Boolean postRideToServer(){
             HttpClient httpClient = new DefaultHttpClient();
             // replace with your url
-            HttpPost httpPost = new HttpPost("https://rideshare-server-yosef456.c9users.io/newride");
+            HttpPost httpPost = new HttpPost("https://rideshare-server-yosef456.c9users.io/search");
 
 
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
-            nameValuePair.add(new BasicNameValuePair("userID", ride.getDriver() + ""));
-            nameValuePair.add(new BasicNameValuePair("origin", ride.getOrigin()));
-            nameValuePair.add(new BasicNameValuePair("dest", ride.getDest()));
-            nameValuePair.add(new BasicNameValuePair("date",ride.getDate()));
-            nameValuePair.add(new BasicNameValuePair("timeStart", ride.getTimeStart()));
-            nameValuePair.add(new BasicNameValuePair("timeEnd", ride.getTimeEnd()));
-            nameValuePair.add(new BasicNameValuePair("capacity", ride.getCapacity() + ""));
-            nameValuePair.add(new BasicNameValuePair("comments", ride.getComments()));
+
+            nameValuePair.add(new BasicNameValuePair("origin", origin));
+            nameValuePair.add(new BasicNameValuePair("dest", dest));
+            nameValuePair.add(new BasicNameValuePair("date",date));
+            nameValuePair.add(new BasicNameValuePair("timeStart", timeStart));
+            nameValuePair.add(new BasicNameValuePair("timeEnd", timeEnd));
 
 
             //Encoding POST data
