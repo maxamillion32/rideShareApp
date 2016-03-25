@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -48,7 +49,7 @@ public class share_ride_post extends Activity {
         dateView = (EditText) findViewById(R.id.ride_date);
         final EditText startTime = (EditText) findViewById(R.id.start_time);
         final EditText endTime = (EditText) findViewById(R.id.end_time);
-        final EditText capacity = (EditText) findViewById(R.id.capacity);
+        final EditText capacity = (EditText) findViewById(R.id.end_time);
         final EditText comments = (EditText) findViewById(R.id.comments_field);
 
         dateView.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +58,20 @@ public class share_ride_post extends Activity {
                 setDate();
             }
         });
+
+        List<String> list = new ArrayList<String>();
+        list.add("Wilf");
+        list.add("Stern");
+        list.add("LGA");
+        list.add("JFK");
+        list.add("Teanack");
+        list.add("Long Island");
+        list.add("LGA");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, list);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        origin.setAdapter(dataAdapter);
+        dest.setAdapter(dataAdapter);
 
         Button shareRide = (Button) findViewById(R.id.startRide);
 

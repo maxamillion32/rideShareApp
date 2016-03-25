@@ -11,6 +11,9 @@ public class Ride {
     String dest;
     String start;
     String end;
+    String taxiType;
+    Boolean menOnly;
+    Boolean womenOnly;
     int capacity;
     String comments;
 
