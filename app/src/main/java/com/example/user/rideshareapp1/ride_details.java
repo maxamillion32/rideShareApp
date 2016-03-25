@@ -1,12 +1,12 @@
 package com.example.user.rideshareapp1;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class ride_details extends ActionBarActivity {
+public class ride_details extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
