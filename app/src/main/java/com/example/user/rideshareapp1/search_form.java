@@ -41,13 +41,13 @@ public class search_form extends ActionBarActivity {
 
         fillSpinners(origin,dest);
 
-        dateView = (TextView) findViewById(R.id.dateView);
-        timeView = (TextView) findViewById(R.id.timeView);
+        dateView = (TextView) findViewById(R.id.search_dateView);
+        timeView = (TextView) findViewById(R.id.search_timeView);
 
-        Button setDate = (Button) findViewById(R.id.setDate);
+        Button setDate = (Button) findViewById(R.id.search_setDate);
         Button setTimeStart = (Button) findViewById(R.id.search_timeStart);
         Button setTimeEnd = (Button) findViewById(R.id.search_timeEnd);
-        Button cancel = (Button) findViewById(R.id.btnCancel);
+        Button cancel = (Button) findViewById(R.id.search_btnCancel);
 
 
         Calendar calendar = Calendar.getInstance();

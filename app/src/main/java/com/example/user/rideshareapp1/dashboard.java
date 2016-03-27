@@ -22,7 +22,7 @@ public class dashboard extends ActionBarActivity {
         login = getIntent().getExtras().getInt("login");
 
         Button share = (Button) findViewById(R.id.share_button);
-        Button driver = (Button) findViewById(R.id.driver_button);
+        //Button driver = (Button) findViewById(R.id.driver_button);
         Button myRides = (Button) findViewById(R.id.myrides_button);
         Button search = (Button) findViewById(R.id.search_button);
 
@@ -36,7 +36,7 @@ public class dashboard extends ActionBarActivity {
             }
         });
 
-        driver.setOnClickListener(new View.OnClickListener() {
+        /**driver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,driver_post_ride.class);
@@ -44,7 +44,7 @@ public class dashboard extends ActionBarActivity {
 
                 startActivity(intent);
             }
-        });
+        });**/
 
         myRides.setOnClickListener(new View.OnClickListener() {
             @Override

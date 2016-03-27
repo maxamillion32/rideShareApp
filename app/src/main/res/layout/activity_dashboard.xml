@@ -27,15 +27,10 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center_horizontal">
                 <Button
-                    android:layout_width="150dp"
+                    android:layout_width="298dp"
                     android:layout_height="150dp"
-                    android:text="Post shared ride"
+                    android:text="POST RIDE"
                     android:id="@+id/share_button" />
-                <Button
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:text="I want to drive!"
-                    android:id="@+id/driver_button" />
             </LinearLayout>
 
             <LinearLayout
@@ -47,7 +42,7 @@
                 <Button
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:text="Search"
+                    android:text="SEARCH RIDE"
                     android:id="@+id/search_button" />
                 <Button
                     android:layout_width="150dp"
