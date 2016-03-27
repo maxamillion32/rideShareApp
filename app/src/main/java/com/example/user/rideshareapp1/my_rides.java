@@ -31,7 +31,7 @@ public class my_rides extends Activity {
     ArrayList<Ride> rides= new ArrayList<Ride>();
     ListView list;
     ProgressBar bar;
-    String login;
+    int login;
     rideAdapter adapter;
 
     @Override
@@ -42,7 +42,7 @@ public class my_rides extends Activity {
         list = (ListView) findViewById(R.id.myRides);
         bar = (ProgressBar) findViewById(R.id.progressBar);
 
-        login = getIntent().getStringExtra("login");
+        login = getIntent().getExtras().getInt("id");
 
         //rides.add(new Ride(1, "Tseitkin", "YU", "LGA", "3/6/16 12:00", "3/6/16 01:00", 5, "you pay!"));
 
@@ -121,13 +121,13 @@ public class my_rides extends Activity {
 }
 
 class getMyRides extends AsyncTask<Void, Void, Boolean> {
-    String login;
+    int login;
     ArrayList<Ride> myRides;
     ListView list;
     rideAdapter adapter;
     ProgressBar bar;
 
-    public getMyRides(String login, ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
+    public getMyRides(int login, ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
         this.login=login;
 
         this.myRides= myRides;
@@ -160,13 +160,11 @@ class getMyRides extends AsyncTask<Void, Void, Boolean> {
 
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            return false;
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     public void parseResponseForRides( HttpResponse response){

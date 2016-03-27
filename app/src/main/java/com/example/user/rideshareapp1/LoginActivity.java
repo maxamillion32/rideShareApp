@@ -31,6 +31,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -274,6 +275,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         private final String mEmail;
         private final String mPassword;
+        private boolean dataBase;
+        private int login = -1;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -281,7 +284,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
 
         protected boolean checkAngelAccount(){
-
 
             HttpClient httpClient = new DefaultHttpClient();
             // replace with your url
@@ -299,7 +301,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
             } catch (UnsupportedEncodingException e) {
                 // log exception
-                e.printStackTrace();
+                return false;
             }
 
             try {
@@ -316,24 +318,72 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     Log.i("RESPONSE",data.length() + "" );
                 }
                 catch(Exception e){
-                    e.printStackTrace();
+                    return false;
                 }
 
                 return data.length()<1000;
             } catch (ClientProtocolException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                return false;
             } catch (IOException e) {
                 // TODO Auto-generated catch block
+                return false;
+            }
+        }
+
+        protected Boolean checkInDatabase(){
+
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/verify?login=" + mEmail);
+            // replace with your url
+
+            HttpResponse response;
+            try {
+                response = client.execute(request);
+
+                Log.d("Response of GET request", response.toString());
+
+                String data = parseResponse(response);
+
+                login = (data.equals("false") ? -1 : Integer.parseInt(data));
+
+                return !data.equals("false");
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                return false;
+            }
+        }
+
+        public String parseResponse( HttpResponse response) {
+
+            String line = "";
+            String data = "";
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                while ((line = br.readLine()) != null) {
+
+                    data += line;
+                }
+                Log.i("RESPONSE", data.length() + "");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
-
-            return false;
+            return data;
         }
+
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+            dataBase = checkInDatabase();
 
             return checkAngelAccount();
         }
@@ -344,10 +394,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
-                // finish();
-                Intent intent = new Intent(that, dashboard.class);
-                intent.putExtra("login",mEmail);
+
+                Intent intent =new Intent(that, (dataBase) ? dashboard.class : signUp.class);
+                intent.putExtra("login",(dataBase) ? login : mEmail);
                 startActivity(intent);
+
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

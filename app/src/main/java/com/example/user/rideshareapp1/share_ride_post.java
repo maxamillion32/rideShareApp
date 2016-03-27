@@ -41,6 +41,8 @@ public class share_ride_post extends Activity {
     private int login;
     private TextView dateView;
     private TextView timeView;
+    private Spinner origin,dest,rideType;
+    private EditText comments,capacity;
     private int year,month,day,hour,minute;
     private String timeStart,timeEnd;
     Boolean timeStartFlag;
@@ -52,13 +54,13 @@ public class share_ride_post extends Activity {
 
         login = getIntent().getExtras().getInt("login");
 
-        Spinner rideType = (Spinner) findViewById(R.id.rideType);
-        Spinner origin = (Spinner) findViewById(R.id.search_origin);
-        Spinner dest = (Spinner) findViewById(R.id.search_dest);
+        rideType = (Spinner) findViewById(R.id.rideType);
+        origin = (Spinner) findViewById(R.id.search_origin);
+        dest = (Spinner) findViewById(R.id.search_dest);
         dateView = (TextView) findViewById(R.id.dateView);
         timeView = (TextView) findViewById(R.id.timeView);
-        EditText capacity = (EditText) findViewById(R.id.capacity);
-        EditText comments = (EditText) findViewById(R.id.comments);
+        capacity = (EditText) findViewById(R.id.capacity);
+        comments = (EditText) findViewById(R.id.comments);
 
         TextView errors = (TextView) findViewById(R.id.error);
 
@@ -117,14 +119,34 @@ public class share_ride_post extends Activity {
 
         Button shareRide = (Button) findViewById(R.id.search_btnSubmit);
 
-        final String login = getIntent().getStringExtra("login");
-
         shareRide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                if (!checkIfNumber(capacity.getText().toString())){
+                    capacity.setError("Capacity has to be number");
+                    return;
+                }
+
+
+                PostRide post = new PostRide(login,rideType.getSelectedItem().toString(),
+                        origin.getSelectedItem().toString(),
+                        dest.getSelectedItem().toString(),dateView.getText().toString(),
+                        timeStart,timeEnd,Integer.parseInt(capacity.getText().toString()),
+                        comments.getText().toString());
+
+                post.execute();
             }
         });
+    }
+
+    protected boolean checkIfNumber(String capacity){
+
+        for (int i=0;i<capacity.length();i++)
+            if (capacity.charAt(i)<48 || capacity.charAt(i) > 57)
+                return false;
+
+        return true;
     }
 
     protected void fillSpinners(Spinner origin, Spinner dest, Spinner rideType){
@@ -226,42 +248,54 @@ public class share_ride_post extends Activity {
                 .append(timeEnd));
     }
 
-    class SearchRide extends AsyncTask<Void, Void, Boolean> {
+    class PostRide extends AsyncTask<Void, Void, Boolean> {
 
+        private int userID;
+        private String type;
         private String origin;
         private String dest;
         private String date;
         private String timeStart;
         private String timeEnd;
+        private int capacity;
+        private String comments;
 
-        public SearchRide(String origin, String dest, String date, String timeStart, String timeEnd){
+        public PostRide(int userID,String type,String origin, String dest, String date, String timeStart, String timeEnd, int capacity,String comments){
+            this.userID = userID;
+            this.type = type;
             this.origin = origin;
             this.dest = dest;
             this.date = date;
             this.timeStart = timeStart;
             this.timeEnd = timeEnd;
+            this.capacity = capacity;
+            this.comments = comments;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            return Ride.isOnline() && postRideToServer();
+            return postRideToServer();
         }
 
         protected Boolean postRideToServer(){
             HttpClient httpClient = new DefaultHttpClient();
             // replace with your url
-            HttpPost httpPost = new HttpPost("https://rideshare-server-yosef456.c9users.io/search");
+            HttpPost httpPost = new HttpPost("https://rideshare-server-yosef456.c9users.io/newride");
 
 
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
 
+            nameValuePair.add(new BasicNameValuePair("userID", userID + ""));
+            nameValuePair.add(new BasicNameValuePair("type", type));
             nameValuePair.add(new BasicNameValuePair("origin", origin));
             nameValuePair.add(new BasicNameValuePair("dest", dest));
             nameValuePair.add(new BasicNameValuePair("date",date));
             nameValuePair.add(new BasicNameValuePair("timeStart", timeStart));
             nameValuePair.add(new BasicNameValuePair("timeEnd", timeEnd));
+            nameValuePair.add(new BasicNameValuePair("capacity", capacity + ""));
+            nameValuePair.add(new BasicNameValuePair("comments", comments));
 
 
             //Encoding POST data

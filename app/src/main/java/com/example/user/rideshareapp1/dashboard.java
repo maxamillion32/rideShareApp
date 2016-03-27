@@ -1,15 +1,16 @@
 package com.example.user.rideshareapp1;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 
-public class dashboard extends ActionBarActivity {
+public class dashboard extends Activity {
 
     private int login;
 
@@ -20,6 +21,9 @@ public class dashboard extends ActionBarActivity {
         setContentView(R.layout.activity_dashboard);
 
         login = getIntent().getExtras().getInt("login");
+
+        Toast.makeText(dashboard.this,login + "" ,
+                Toast.LENGTH_LONG).show();
 
         Button share = (Button) findViewById(R.id.share_button);
         //Button driver = (Button) findViewById(R.id.driver_button);
@@ -35,16 +39,6 @@ public class dashboard extends ActionBarActivity {
                 startActivity(intent);
             }
         });
-
-        /**driver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(dashboard.this,driver_post_ride.class);
-                intent.putExtra("login",login);
-
-                startActivity(intent);
-            }
-        });**/
 
         myRides.setOnClickListener(new View.OnClickListener() {
             @Override

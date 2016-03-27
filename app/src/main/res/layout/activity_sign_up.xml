@@ -1,120 +1,63 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView1"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#B4CDCD"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
-    <LinearLayout
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#faa519"
-        android:baselineAligned="false"
-        android:orientation="vertical">
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="45sp"
+        android:layout_marginBottom="25sp"
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Sign Up"
+        android:textSize="40sp"
+        android:id="@+id/header" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Please sign up to our app"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Name"
+        android:ems="10"
+        android:id="@+id/signup_name"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="75dp" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:hint="Email"
+        android:id="@+id/signup_email"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/signup_error"
+        android:layout_gravity="center_horizontal" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="48dp"
-            android:background="#e8e8e7"
-            android:orientation="horizontal"
-            android:layout_alignParentTop="true">
-
-
-
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sign up"
-                android:textColor="#2582C5"
-                android:layout_marginLeft="25dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-
-                android:layout_gravity="center_horizontal|center_vertical"/>
-
-
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="48dp"
-                android:gravity="right"
-                android:orientation="horizontal" >
-
-
-
-            </LinearLayout>
-        </LinearLayout>
-
-
-        <LinearLayout android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="30dp"
-            android:orientation="vertical"
-            android:background="@drawable/greybackground"
-            >
-
-
-            <EditText android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:hint="name"
-                android:background="#f3f3f3"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="30dp"/>
-
-            <EditText android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:hint="email"
-                android:background="#f3f3f3"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="15dp"/>
-            <EditText android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:hint="mobile"
-                android:background="#f3f3f3"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="15dp"/>
-            <EditText android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:hint="address"
-                android:background="#f3f3f3"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="15dp"/>
-            <EditText android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:hint="category"
-                android:background="#f3f3f3"
-                android:paddingLeft="5dp"
-                android:layout_marginTop="15dp"/>
-            <Button android:layout_width="190dp"
-                android:layout_height="38dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="submit"
-                android:textColor="#fff"
-                android:background="@drawable/btn"/>
-
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-
-            >
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/signup_submit"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="75dp" />
 
 
-
-
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-
-
-</ScrollView>
+</LinearLayout>
