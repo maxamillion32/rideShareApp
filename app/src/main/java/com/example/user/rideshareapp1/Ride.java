@@ -9,27 +9,36 @@ public class Ride {
 
     private int id;
     private int userID;
+    private String name;
+    private String email;
     private String origin;
     private String dest;
     private String date;
     private String start;
     private String end;
-    private String taxiType;
+    private String type;
+    private int spotTaken;
     private int capacity;
     private String comments;
 
-    public Ride(int id, int UserID, String origin, String date ,String dest, String start, String end, int capacity,String comments){
+    public Ride(int id, int UserID,String name,String email,String type ,String origin
+            ,String dest, String date,String start, String end, int capacity,int spotsTaken,String comments){
         this.id=id;
         this.userID=UserID;
+        this.name = name;
+        this.email=email;
+        this.type = type;
         this.origin=origin;
         this.dest=dest;
         this.date = date;
         this.start=start;
         this.end=end;
         this.capacity=capacity;
+        this.spotTaken = spotsTaken;
         this.comments=comments;
     }
 
+    public int getId(){ return this.id;}
     public String getOrigin(){
         return this.origin;
     }
@@ -58,9 +67,16 @@ public class Ride {
         return this.comments;
     }
 
+    public String getName(){ return this.name;}
+
+    public  String getEmail(){ return this.email;}
+
+    public String getType(){ return type;}
+
     public String toString()
     {
-        return this.origin + " " + this.dest + " " + this.start + " " + this.end + " " + Integer.toString(this.capacity) + " " + this.comments;
+        return this.id +"_" +this.userID +"_" + this.name +"_" + this.email+"_"+ this.type+"_"+this.origin + "_" + this.dest +"_"+
+            this.date + "_" + this.start + "_" + this.end + "_" + Integer.toString(this.capacity) + "_" +this.spotTaken+ "_"+ this.comments;
     }
 
     public static boolean isOnline() {

@@ -9,7 +9,7 @@
     <!-- Header -->
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="45sp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="25sp"
         android:layout_gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -60,7 +60,7 @@
         <Spinner
             android:layout_width="113dp"
             android:layout_height="wrap_content"
-            android:id="@+id/search_origin"
+            android:id="@+id/row_origin"
             android:spinnerMode="dialog" />
 
         <TextView
@@ -72,7 +72,7 @@
         <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/search_dest"
+            android:id="@+id/row_dest"
             android:layout_weight="1"
             android:spinnerMode="dialog" />
 
@@ -137,7 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="TIME START"
-            android:id="@+id/search_timeStart"
+            android:id="@+id/row_date"
             android:paddingLeft="5dp"
             android:layout_marginLeft="10dp" />
 
@@ -145,7 +145,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="TIME END"
-            android:id="@+id/search_timeEnd"
+            android:id="@+id/row_timeStart"
             android:paddingLeft="5dp"
             android:layout_marginLeft="10dp" />
 

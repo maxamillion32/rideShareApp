@@ -29,17 +29,17 @@ public class rideAdapter extends ArrayAdapter<Ride> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.ride_row_adapter, parent, false);
 
-        TextView origin = (TextView) rowView.findViewById(R.id.search_origin);
-        TextView dest = (TextView) rowView.findViewById(R.id.search_dest);
-        TextView timeStart = (TextView) rowView.findViewById(R.id.search_timeStart);
-        TextView timeEnd = (TextView) rowView.findViewById(R.id.search_timeEnd);
-        TextView driver = (TextView) rowView.findViewById(R.id.driver);
+        TextView origin = (TextView) rowView.findViewById(R.id.row_origin);
+        TextView dest = (TextView) rowView.findViewById(R.id.row_dest);
+        TextView date = (TextView) rowView.findViewById(R.id.row_date);
+        TextView timeStart = (TextView) rowView.findViewById(R.id.row_timeStart);
+        TextView timeEnd = (TextView) rowView.findViewById(R.id.row_timeEnd);
 
-        origin.setText(values.get(position).getOrigin() + "   ");
+        origin.setText(values.get(position).getOrigin() + "         ");
         dest.setText(values.get(position).getDest() + "   ");
-        timeStart.setText(values.get(position).getTimeStart() + "   -");
+        date.setText(values.get(position).getDate() + "  ");
+        timeStart.setText(values.get(position).getTimeStart() + "    -     ");
         timeEnd.setText(values.get(position).getTimeEnd() + "   ");
-        driver.setText(values.get(position).getDriver() + "   ");
 
         return rowView;
     }

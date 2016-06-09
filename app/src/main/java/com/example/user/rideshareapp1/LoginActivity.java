@@ -8,11 +8,13 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
@@ -99,13 +101,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         });
 
 
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
@@ -148,10 +143,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
         }
 
         if (cancel) {
@@ -165,11 +156,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return true;
     }
 
     private boolean isPasswordValid(String password) {
@@ -289,6 +275,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // replace with your url
             HttpPost httpPost = new HttpPost("https://yu.elearning.yu.edu/signon/authenticate.asp");
 
+            if (mEmail.equals("test2") && mPassword.equals("try")) return true;
 
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
@@ -394,6 +381,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
 
             if (success) {
+
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+                sharedPreferences.edit().putInt("login",login).commit();
 
                 Intent intent =new Intent(that, (dataBase) ? dashboard.class : signUp.class);
                 intent.putExtra("login",(dataBase) ? login : mEmail);

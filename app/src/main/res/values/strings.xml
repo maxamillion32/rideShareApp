@@ -11,4 +11,7 @@
     <string name="title_activity_search_form">search_form</string>
     <string name="title_activity_search_results">search_results</string>
     <string name="title_activity_ride_details">ride_details</string>
+    <string name="title_activity_approve_ride">approve_ride</string>
+    <string name="title_activity_registering_token">RegisteringToken</string>
+    <string name="title_activity_approval_details">approvalDetails</string>
 </resources>

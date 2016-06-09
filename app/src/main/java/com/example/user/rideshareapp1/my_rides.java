@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 public class my_rides extends Activity {
 
 
-    ArrayList<Ride> rides= new ArrayList<Ride>();
+    ArrayList<Ride> rides;
     ListView list;
     ProgressBar bar;
     int login;
@@ -39,14 +38,12 @@ public class my_rides extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_rides);
 
+        rides= new ArrayList<>();
+
         list = (ListView) findViewById(R.id.myRides);
         bar = (ProgressBar) findViewById(R.id.progressBar);
 
-        login = getIntent().getExtras().getInt("id");
-
-        //rides.add(new Ride(1, "Tseitkin", "YU", "LGA", "3/6/16 12:00", "3/6/16 01:00", 5, "you pay!"));
-
-        //rides.add(new Ride(1, "Tseitkin", "LGA", "YU", "3/6/16 03:00", "3/6/16 04:00", 6, "no comments"));
+        login = getIntent().getExtras().getInt("login");
 
         adapter = new rideAdapter(my_rides.this,rides);
 
@@ -60,42 +57,61 @@ public class my_rides extends Activity {
 
                 Ride picked = rides.get(position);
 
-                intent.putExtra("info", picked.toString());
+                intent.putExtra("login", login);
 
-                startActivity(intent);
+                intent.putExtra("infoMyRide", picked.toString());
+
+                startActivityForResult(intent, 2);
 
             }
         });
 
         getMyRides getStuff = new getMyRides(login,rides,list,adapter,bar);
 
-        if (!isOnline()){
-            TextView error = (TextView) findViewById(R.id.error);
+        getStuff.execute((Void) null);
+    }
 
-            bar.setVisibility(View.GONE);
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
-            error.setText("No internet connection/ server not running");
-        }
-        else
+        bar.setVisibility(View.VISIBLE);
+
+        rides= new ArrayList<>();
+
+        adapter = new rideAdapter(my_rides.this,rides);
+
+        list.setAdapter(adapter);
+
+        getMyRides getStuff = new getMyRides(login,rides,list,adapter,bar);
+
+        getStuff.execute((Void) null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode==RESULT_OK && data.getExtras().getBoolean("delete")) {
+
+            bar.setVisibility(View.VISIBLE);
+
+            rides = new ArrayList<>();
+
+            adapter = new rideAdapter(my_rides.this,rides);
+
+            list.setAdapter(adapter);
+
+            getMyRides getStuff = new getMyRides(login, rides, list, adapter, bar);
+
             getStuff.execute((Void) null);
+        }
     }
-
-    public boolean isOnline() {
-
-        Runtime runtime = Runtime.getRuntime();
-        try {
-
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
-            int     exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-
-        } catch (IOException e)          { e.printStackTrace(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
-
-        return false;
-    }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,7 +158,8 @@ class getMyRides extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
 
-        //android.os.Debug.waitForDebugger();
+        if(android.os.Debug.isDebuggerConnected())
+            android.os.Debug.waitForDebugger();
 
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
@@ -183,17 +200,20 @@ class getMyRides extends AsyncTask<Void, Void, Boolean> {
             e.printStackTrace();
         }
 
-        String [] rideString = data.split("\n");
+        if (data.length()==0)
+            return;
+
+        String [] rideString = data.split(";");
 
         for (int i=0;i<rideString.length;i++){
             String singleRide = rideString[i];
 
-            String [] details = singleRide.split(" ");
+            String [] details = singleRide.split("_");
 
-            /**myRides.add(new Ride(Integer.parseInt(details[0]),details[1],
-                    details[2],details[3],details[4] + details[5] +details[6] + details[7] + details[8] + details[9] +details[10],
-                    details[11] + details[12] +details[13] + details[14] +details[15] + details[16] + details[17] ,
-                    Integer.parseInt(details[6]),details[7]));**/
+            myRides.add(new Ride(Integer.parseInt(details[0]),Integer.parseInt(details[1]),
+                    details[2],details[3],
+                    details[4],details[5],details[6],
+                    details[7] , details[8],details[9], Integer.parseInt(details[10]), Integer.parseInt(details[11]),details[12]));
 
             Log.i("RESPONSE" ,"ride: " + singleRide );
         }

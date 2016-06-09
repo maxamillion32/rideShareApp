@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 
 public class dashboard extends Activity {
@@ -21,9 +20,6 @@ public class dashboard extends Activity {
         setContentView(R.layout.activity_dashboard);
 
         login = getIntent().getExtras().getInt("login");
-
-        Toast.makeText(dashboard.this,login + "" ,
-                Toast.LENGTH_LONG).show();
 
         Button share = (Button) findViewById(R.id.share_button);
         //Button driver = (Button) findViewById(R.id.driver_button);

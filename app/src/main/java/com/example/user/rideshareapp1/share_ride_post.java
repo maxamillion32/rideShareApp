@@ -55,8 +55,8 @@ public class share_ride_post extends Activity {
         login = getIntent().getExtras().getInt("login");
 
         rideType = (Spinner) findViewById(R.id.rideType);
-        origin = (Spinner) findViewById(R.id.search_origin);
-        dest = (Spinner) findViewById(R.id.search_dest);
+        origin = (Spinner) findViewById(R.id.row_origin);
+        dest = (Spinner) findViewById(R.id.row_dest);
         dateView = (TextView) findViewById(R.id.dateView);
         timeView = (TextView) findViewById(R.id.timeView);
         capacity = (EditText) findViewById(R.id.capacity);
@@ -67,8 +67,8 @@ public class share_ride_post extends Activity {
         errors.setText("");
 
         Button setDate = (Button) findViewById(R.id.setDate);
-        Button setTimeStart = (Button) findViewById(R.id.search_timeStart);
-        Button setTimeEnd = (Button) findViewById(R.id.search_timeEnd);
+        Button setTimeStart = (Button) findViewById(R.id.row_date);
+        Button setTimeEnd = (Button) findViewById(R.id.row_timeStart);
         Button cancel = (Button) findViewById(R.id.btnCancel);
 
         Calendar  calendar = Calendar.getInstance();
@@ -123,9 +123,13 @@ public class share_ride_post extends Activity {
             @Override
             public void onClick(View view) {
 
-                if (!checkIfNumber(capacity.getText().toString())){
+                if (capacity.getText().toString().length()==0 || !checkIfNumber(capacity.getText().toString())){
                     capacity.setError("Capacity has to be number");
                     return;
+                }
+
+                if (comments.getText().toString().length()==0){
+                    comments.setText("no comments");
                 }
 
 
@@ -143,7 +147,7 @@ public class share_ride_post extends Activity {
     protected boolean checkIfNumber(String capacity){
 
         for (int i=0;i<capacity.length();i++)
-            if (capacity.charAt(i)<48 || capacity.charAt(i) > 57)
+            if (capacity.charAt(i) < '0' && capacity.charAt(i) > '9')
                 return false;
 
         return true;
@@ -155,9 +159,8 @@ public class share_ride_post extends Activity {
         places.add("Stern");
         places.add("LGA");
         places.add("JFK");
-        places.add("Teanack");
-        places.add("Long Island");
-        places.add("LGA");
+        places.add("Teaneck");
+        //places.add("LGA");
         ArrayAdapter<String> placeAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, places);
         placeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -287,7 +290,7 @@ public class share_ride_post extends Activity {
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
 
-            nameValuePair.add(new BasicNameValuePair("userID", userID + ""));
+            nameValuePair.add(new BasicNameValuePair("userID", login + ""));
             nameValuePair.add(new BasicNameValuePair("type", type));
             nameValuePair.add(new BasicNameValuePair("origin", origin));
             nameValuePair.add(new BasicNameValuePair("dest", dest));
@@ -341,6 +344,8 @@ public class share_ride_post extends Activity {
                 Intent intent = new Intent(share_ride_post.this, my_rides.class);
 
                 intent.putExtra("login", login);
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 startActivity(intent);
             }

@@ -3,12 +3,21 @@
     android:background="#B4CDCD"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/signup_view">
 
     <!-- Header -->
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:visibility="gone"
+        android:id="@+id/signup_progress"
+        android:indeterminate="false" />
+
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="45sp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="25sp"
         android:layout_gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -40,9 +49,7 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:hint="Email"
-        android:id="@+id/signup_email"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp" />
+        android:id="@+id/signup_email" />
 
     <TextView
         android:layout_width="wrap_content"

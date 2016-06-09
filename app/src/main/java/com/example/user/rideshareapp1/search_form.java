@@ -3,6 +3,7 @@ package com.example.user.rideshareapp1;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -31,23 +32,30 @@ public class search_form extends ActionBarActivity {
 
     int year,month,day,hour,minute;
 
+    int login;
+
+    Spinner origin,dest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_form);
 
-        Spinner origin = (Spinner) findViewById(R.id.search_origin);
-        Spinner dest = (Spinner) findViewById(R.id.search_dest);
+        login = getIntent().getExtras().getInt("login");
 
-        fillSpinners(origin,dest);
+        origin = (Spinner) findViewById(R.id.row_origin);
+        dest = (Spinner) findViewById(R.id.row_dest);
+
+        fillSpinners();
 
         dateView = (TextView) findViewById(R.id.search_dateView);
         timeView = (TextView) findViewById(R.id.search_timeView);
 
         Button setDate = (Button) findViewById(R.id.search_setDate);
-        Button setTimeStart = (Button) findViewById(R.id.search_timeStart);
-        Button setTimeEnd = (Button) findViewById(R.id.search_timeEnd);
+        Button setTimeStart = (Button) findViewById(R.id.row_date);
+        Button setTimeEnd = (Button) findViewById(R.id.row_timeStart);
         Button cancel = (Button) findViewById(R.id.search_btnCancel);
+        Button submit = (Button) findViewById(R.id.search_btnSubmit);
 
 
         Calendar calendar = Calendar.getInstance();
@@ -61,6 +69,22 @@ public class search_form extends ActionBarActivity {
         timeEnd = "23:59";
 
         timeView.setText(timeStart + " - " + timeEnd);
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(search_form.this, search_results.class);
+
+                intent.putExtra("login", login);
+
+                intent.putExtra("search", origin.getSelectedItem().toString() + "_" + dest.getSelectedItem().toString() + "_"
+                + dateView.getText().toString() + "_" + timeStart + "_" + timeEnd);
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+            }
+        });
 
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,9 +117,11 @@ public class search_form extends ActionBarActivity {
                 finish();
             }
         });
+
+
     }
 
-    protected void fillSpinners(Spinner origin, Spinner dest){
+    protected void fillSpinners(){
         List<String> places = new ArrayList<String>();
         places.add("Wilf");
         places.add("Stern");
