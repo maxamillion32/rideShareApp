@@ -24,6 +24,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -241,6 +243,22 @@ public class search_results extends ActionBarActivity {
 
                     data+=line;
                 }
+
+                JSONArray arr = new JSONArray(data);
+
+                for (int i=0;i<arr.length();i++){
+                    JSONObject singleRide = arr.getJSONObject(i);
+
+                    myRides.add(new Ride(singleRide.getInt("id"),singleRide.getInt("driver_id"),
+                            singleRide.getString("name"),singleRide.getString("email"),
+                            singleRide.getString("type"),singleRide.getString("origin"),singleRide.getString("dest"),
+                            singleRide.getString("date") , singleRide.getString("timestart"),singleRide.getString("timeend"),
+                            singleRide.getInt("capacity"), singleRide.getInt("spotstaken"),"non",
+                            singleRide.getString("comments")));
+
+                    Log.i("RESPONSE" ,"ride: " + singleRide );
+                }
+
                 Log.i("RESPONSE",data.length() + "" );
             }
             catch(Exception e){
@@ -249,21 +267,6 @@ public class search_results extends ActionBarActivity {
 
             if (data.length()==0)
                 return;
-
-            String [] rideString = data.split(";");
-
-            for (int i=0;i<rideString.length;i++){
-                String singleRide = rideString[i];
-
-                String [] details = singleRide.split("_");
-
-                myRides.add(new Ride(Integer.parseInt(details[0]),Integer.parseInt(details[1]),
-                        details[2],details[3],
-                        details[4],details[5],details[6],
-                        details[7] , details[8],details[9], Integer.parseInt(details[10]), Integer.parseInt(details[11]),details[12]));
-
-                Log.i("RESPONSE" ,"ride: " + singleRide );
-            }
 
         }
 

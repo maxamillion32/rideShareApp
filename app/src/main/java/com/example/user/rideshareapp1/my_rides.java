@@ -17,6 +17,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -134,105 +136,106 @@ public class my_rides extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-}
 
-class getMyRides extends AsyncTask<Void, Void, Boolean> {
-    int login;
-    ArrayList<Ride> myRides;
-    ListView list;
-    rideAdapter adapter;
-    ProgressBar bar;
+    class getMyRides extends AsyncTask<Void, Void, Boolean> {
+        int login;
+        ArrayList<Ride> myRides;
+        ListView list;
+        rideAdapter adapter;
+        ProgressBar bar;
 
-    public getMyRides(int login, ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
-        this.login=login;
+        public getMyRides(int login, ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
+            this.login=login;
 
-        this.myRides= myRides;
+            this.myRides= myRides;
 
-        this.list=list;
+            this.list=list;
 
-        this.adapter = adapter;
+            this.adapter = adapter;
 
-        this.bar = bar;
-    }
-
-    @Override
-    protected Boolean doInBackground(Void... params) {
-
-        if(android.os.Debug.isDebuggerConnected())
-            android.os.Debug.waitForDebugger();
-
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
-        // replace with your url
-
-        HttpResponse response;
-        try {
-            response = client.execute(request);
-
-            Log.d("Response of GET request", response.toString());
-
-            parseResponseForRides(response);
-
-            return true;
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            return false;
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            return false;
+            this.bar = bar;
         }
-    }
 
-    public void parseResponseForRides( HttpResponse response){
+        @Override
+        protected Boolean doInBackground(Void... params) {
 
-        String line="";
-        String data="";
-        try{
-            BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            while((line=br.readLine())!=null){
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
 
-                data+=line;
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
+            // replace with your url
+
+            HttpResponse response;
+            try {
+                response = client.execute(request);
+
+                Log.d("Response of GET request", response.toString());
+
+                parseResponseForRides(response);
+
+                return true;
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                return false;
             }
-            Log.i("RESPONSE",data.length() + "" );
-        }
-        catch(Exception e){
-            e.printStackTrace();
         }
 
-        if (data.length()==0)
-            return;
+        public void parseResponseForRides( HttpResponse response){
 
-        String [] rideString = data.split(";");
+            String line="";
+            String data="";
+            try{
+                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                while((line=br.readLine())!=null){
 
-        for (int i=0;i<rideString.length;i++){
-            String singleRide = rideString[i];
+                    data+=line;
+                }
+                JSONArray arr = new JSONArray(data);
 
-            String [] details = singleRide.split("_");
+                for (int i=0;i<arr.length();i++){
+                    JSONObject singleRide = arr.getJSONObject(i);
 
-            myRides.add(new Ride(Integer.parseInt(details[0]),Integer.parseInt(details[1]),
-                    details[2],details[3],
-                    details[4],details[5],details[6],
-                    details[7] , details[8],details[9], Integer.parseInt(details[10]), Integer.parseInt(details[11]),details[12]));
+                    myRides.add(new Ride(singleRide.getInt("id"),singleRide.getInt("driver_id"),
+                            singleRide.getString("name"),singleRide.getString("email"),
+                            singleRide.getString("type"),singleRide.getString("origin"),singleRide.getString("dest"),
+                            singleRide.getString("date") , singleRide.getString("timestart"),singleRide.getString("timeend"),
+                            singleRide.getInt("capacity"), singleRide.getInt("spotstaken"),
+                            singleRide.getString("status"),singleRide.getString("comments")));
 
-            Log.i("RESPONSE" ,"ride: " + singleRide );
+                    Log.i("RESPONSE" ,"ride: " + singleRide );
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+
+            if (data.length()==0)
+                return;
+
+
+
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success){
+                adapter.notifyDataSetChanged();
+                bar.setVisibility(View.GONE);
+            }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+
         }
 
     }
-
-    @Override
-    protected void onPostExecute(final Boolean success) {
-
-        if (success){
-            adapter.notifyDataSetChanged();
-            bar.setVisibility(View.GONE);
-        }
-
-    }
-
-    @Override
-    protected void onCancelled() {
-
-    }
-
 }
+

@@ -6,31 +6,38 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" tools:context=".LoginActivity"
-    android:id="@+id/rideApprove">
+    android:id="@+id/rideDetails">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="45sp"
         android:layout_gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Approve List"
+        android:text="Approve Request"
         android:textSize="40sp"
         android:id="@+id/header"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ride_approve_progress"
-        android:indeterminate="false"
-        android:layout_gravity="center_horizontal" />
+        android:id="@+id/listView"
+        android:layout_gravity="center_horizontal"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"/>
 
-    <ListView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/approvalList" />
+        android:layout_height="match_parent">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText" />
+
+    </LinearLayout>
 
 </LinearLayout>

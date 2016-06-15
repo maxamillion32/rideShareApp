@@ -27,10 +27,17 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center_horizontal">
                 <Button
-                    android:layout_width="298dp"
+                    android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:text="POST RIDE"
                     android:id="@+id/share_button" />
+
+                <Button
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:text="Approve Requests"
+                    android:id="@+id/dashboard_approve" />
+
             </LinearLayout>
 
             <LinearLayout

@@ -41,10 +41,16 @@ public class ride_details extends Activity {
     int mode;
     Ride ride;
 
+    char status;
+
+    Activity that = this;
+
     Button delete;
     Button cancel;
     Button join;
     Button chat;
+
+    TextView capacity;
 
 
     @Override
@@ -53,6 +59,7 @@ public class ride_details extends Activity {
         setContentView(R.layout.activity_ride_details);
 
         String[] details;
+
 
         rideDetailView = findViewById(R.id.rideDetails);
         rideDetailProgress = findViewById(R.id.ride_action_progress);
@@ -74,42 +81,31 @@ public class ride_details extends Activity {
         ride = new Ride(Integer.parseInt(details[0]), Integer.parseInt(details[1]),
                 details[2], details[3],
                 details[4], details[5], details[6],
-                details[7], details[8], details[9], Integer.parseInt(details[10]), Integer.parseInt(details[11]), details[12]);
+                details[7], details[8], details[9], Integer.parseInt(details[10]),
+                Integer.parseInt(details[11]),details[12],details[13]);
 
         if (ride.getDriver() == login){
 
             cancel.setVisibility(View.GONE);
             join.setVisibility(View.GONE);
             mode = MY_RIDE;
-        }
-        else if(isJoined(ride.getId())){
 
-            delete.setVisibility(View.GONE);
-            join.setVisibility(View.GONE);
-            mode = JOINED_RIDE;
-        }
-        else if(isPending(ride.getId())){
-            delete.setVisibility(View.GONE);
-            join.setVisibility(View.GONE);
-            cancel.setVisibility(View.GONE);
-            chat.setVisibility(View.GONE);
-            mode = PENDING_RIDE;
-
-            ((TextView)findViewById(R.id.details_pending)).setText("Ride Pending. Please wait for driver to approve.");
         }
         else {
-            delete.setVisibility(View.GONE);
-            cancel.setVisibility(View.GONE);
-            chat.setVisibility(View.GONE);
-            mode = EXPLORE;
+
+            showProgress(true);
+
+            RideStatus rs = new RideStatus();
+
+            rs.execute();
         }
 
         TextView name = (TextView) findViewById(R.id.details_name);
-        TextView capacity = (TextView) findViewById(R.id.details_capacity);
+        capacity = (TextView) findViewById(R.id.details_capacity);
         TextView type = (TextView) findViewById(R.id.details_type);
 
         name.setText("Name:" + ride.getName());
-        capacity.setText("Spots left:" +ride.getCapacity());
+        capacity.setText("Spots left:" +(ride.getCapacity()- ride.getSpotTaken()));
         type.setText("Type:" + ride.getType());
 
         TextView origin = (TextView) findViewById(R.id.details_origin);
@@ -144,7 +140,7 @@ public class ride_details extends Activity {
             @Override
             public void onClick(View view) {
                 showProgress(true);
-                joinRide joinRide = new joinRide(ride.getId());
+                joinRide joinRide = new joinRide();
 
                 joinRide.execute();
             }
@@ -153,18 +149,13 @@ public class ride_details extends Activity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showProgress(true);
+                CancelRide cr = new CancelRide();
 
+                cr.execute();
             }
         });
 
-    }
-
-    public boolean isJoined(int id){
-        return false;
-    }
-
-    public boolean isPending (int id){
-        return false;
     }
 
     @Override
@@ -313,10 +304,8 @@ public class ride_details extends Activity {
 
     class joinRide extends AsyncTask<Void, Void, Boolean> {
 
-        int ride;
+        public joinRide() {
 
-        public joinRide(int ride) {
-            this.ride = ride;
         }
 
         @Override
@@ -327,7 +316,7 @@ public class ride_details extends Activity {
 
             HttpClient client = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/pending?ride_id=" + ride + "&pass_id=" + login);
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/request?ride_id=" + ride.getId() + "&pass_id=" + login);
             // replace with your url
 
             HttpResponse response;
@@ -355,21 +344,18 @@ public class ride_details extends Activity {
                 Toast.makeText(ride_details.this, "Ride joined",
                         Toast.LENGTH_LONG).show();
 
-//                Intent intent = new Intent();
-//
-//                intent.putExtra("delete", false);
-//
-//                setResult(RESULT_OK, intent);
-
                 delete.setVisibility(View.GONE);
                 join.setVisibility(View.GONE);
                 cancel.setVisibility(View.GONE);
                 chat.setVisibility(View.GONE);
                 mode = PENDING_RIDE;
 
-                ((TextView)findViewById(R.id.details_pending)).setText("Ride Pending. Please wait for driver to approve.");
+                capacity.setText("Spots left:" +(ride.getCapacity()- ride.getSpotTaken() +1));
+
+                ((TextView) findViewById(R.id.rideDetailError)).setText("Waiting approval");
 
                 showProgress(false);
+
 
             } else {
                 TextView error = (TextView) findViewById(R.id.rideDetailError);
@@ -380,4 +366,188 @@ public class ride_details extends Activity {
         }
 
         }
+
+    class RideStatus  extends AsyncTask<Void, Void, Boolean> {
+
+        char status;
+
+        public RideStatus() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            String line="";
+            String data="";
+
+            if (android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/getstatus?ride_id=" + ride.getId()
+                        + "&id=" + login);
+            // replace with your url
+
+            HttpResponse response;
+            try {
+                response = client.execute(request);
+
+                Log.d("Response of GET request", response.toString());
+
+                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                while((line=br.readLine())!=null){
+
+                    data+=line;
+                }
+
+                status = data.charAt(0);
+
+                return true;
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                showProgress(false);
+
+                if(status == 'n'){
+
+                    delete.setVisibility(View.GONE);
+                    cancel.setVisibility(View.GONE);
+                    chat.setVisibility(View.GONE);
+                    mode = EXPLORE;
+
+                }
+                else if(status == 'j'){
+
+                    delete.setVisibility(View.GONE);
+                    join.setVisibility(View.GONE);
+                    mode = JOINED_RIDE;
+
+                }
+                else if(status == 'p'){
+                    delete.setVisibility(View.GONE);
+                    join.setVisibility(View.GONE);
+                    cancel.setVisibility(View.GONE);
+                    chat.setVisibility(View.GONE);
+                    mode = PENDING_RIDE;
+
+                    ((TextView)findViewById(R.id.rideDetailError)).setText("Waiting approval");
+
+                }
+                else {
+                    showProgress(false);
+
+                    Toast.makeText(that, "An error has occurred", Toast.LENGTH_LONG);
+
+                    finish();
+                }
+
+            } else {
+                TextView error = (TextView) findViewById(R.id.rideDetailError);
+                error.setText("An error has occurred");
+                showProgress(false);
+            }
+
+        }
+
+    }
+
+    class CancelRide extends AsyncTask<Void, Void, Boolean> {
+
+        public CancelRide(){
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/cancelride?ride_id=" + ride.getId()
+                            + "&pass_id=" + login);
+            // replace with your url
+
+            HttpResponse response;
+            try {
+                response = client.execute(request);
+
+                Log.d("Response of GET request", response.toString());
+
+                return parseResponseForRides(response);
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                return false;
+            }
+        }
+
+        public boolean parseResponseForRides( HttpResponse response){
+
+            String line="";
+            String data="";
+            try{
+                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                while((line=br.readLine())!=null){
+
+                    data+=line;
+                }
+                Log.i("RESPONSE",data.length() + "" );
+            }
+            catch(Exception e){
+                return false;
+            }
+
+            return data.equals("true");
+
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success){
+                showProgress(false);
+                Toast.makeText(ride_details.this, "Ride canceled",
+                        Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent();
+
+                intent.putExtra("delete",true);
+
+                setResult(RESULT_OK,intent);
+
+                finish();
+            }
+            else{
+                TextView error = (TextView) findViewById(R.id.rideDetailError);
+                error.setText("An error has occurred");
+                showProgress(false);
+            }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+
+    }
+
     }

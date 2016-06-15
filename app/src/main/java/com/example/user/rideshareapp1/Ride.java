@@ -19,10 +19,12 @@ public class Ride {
     private String type;
     private int spotTaken;
     private int capacity;
+    private String status;
     private String comments;
 
+
     public Ride(int id, int UserID,String name,String email,String type ,String origin
-            ,String dest, String date,String start, String end, int capacity,int spotsTaken,String comments){
+            ,String dest, String date,String start, String end, int capacity,int spotsTaken,String status,String comments){
         this.id=id;
         this.userID=UserID;
         this.name = name;
@@ -35,6 +37,7 @@ public class Ride {
         this.end=end;
         this.capacity=capacity;
         this.spotTaken = spotsTaken;
+        this.status = status;
         this.comments=comments;
     }
 
@@ -54,6 +57,7 @@ public class Ride {
     public int getDriver(){
         return this.userID;
     }
+    public int getSpotTaken() { return this.spotTaken;}
 
     public String getDate(){
         return this.date;
@@ -73,10 +77,13 @@ public class Ride {
 
     public String getType(){ return type;}
 
+    public String getStatus(){ return status;}
+
     public String toString()
     {
         return this.id +"_" +this.userID +"_" + this.name +"_" + this.email+"_"+ this.type+"_"+this.origin + "_" + this.dest +"_"+
-            this.date + "_" + this.start + "_" + this.end + "_" + Integer.toString(this.capacity) + "_" +this.spotTaken+ "_"+ this.comments;
+            this.date + "_" + this.start + "_" + this.end + "_" + Integer.toString(this.capacity) +
+                "_" +this.spotTaken+ "_"+ this.status + "_" + this.comments;
     }
 
     public static boolean isOnline() {

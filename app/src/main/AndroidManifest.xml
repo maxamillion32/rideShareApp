@@ -92,6 +92,9 @@
         <activity
             android:name=".approvalDetails"
             android:label="@string/title_activity_approval_details"></activity>
+        <activity
+            android:name=".CharRoom"
+            android:label="@string/title_activity_char_room"></activity>
     </application>
 
 </manifest>

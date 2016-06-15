@@ -147,7 +147,7 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/comments_rideInfo">
 
@@ -168,12 +168,6 @@
             android:gravity="fill"
             android:layout_margin="10dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/details_pending"
-            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <LinearLayout
@@ -224,13 +218,19 @@
             android:text="Chat Room"
             android:id="@+id/details_chat" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/rideDetailError"
             android:layout_gravity="center_horizontal" />
-
     </LinearLayout>
 
 </LinearLayout>

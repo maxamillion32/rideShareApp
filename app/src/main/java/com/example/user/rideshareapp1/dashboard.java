@@ -25,11 +25,22 @@ public class dashboard extends Activity {
         //Button driver = (Button) findViewById(R.id.driver_button);
         Button myRides = (Button) findViewById(R.id.myrides_button);
         Button search = (Button) findViewById(R.id.search_button);
+        Button approve = (Button) findViewById(R.id.dashboard_approve);
 
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,share_ride_post.class);
+                intent.putExtra("login",login);
+
+                startActivity(intent);
+            }
+        });
+
+        approve.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(dashboard.this,approve_ride.class);
                 intent.putExtra("login",login);
 
                 startActivity(intent);
