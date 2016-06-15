@@ -156,6 +156,17 @@ public class ride_details extends Activity {
             }
         });
 
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ride_details.this, CharRoom.class);
+
+                intent.putExtra("rideId", ride.getId());
+
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override

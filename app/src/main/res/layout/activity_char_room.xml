@@ -22,8 +22,8 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
+        android:layout_height="360dp"
+        android:id="@+id/chat"
         android:layout_gravity="center_horizontal"
         android:transcriptMode="alwaysScroll"
         android:stackFromBottom="true"/>
@@ -31,12 +31,19 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="100dp">
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:id="@+id/editText" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Write text"
+            android:text="Send"
+            android:id="@+id/chat_send" />
 
     </LinearLayout>
 
