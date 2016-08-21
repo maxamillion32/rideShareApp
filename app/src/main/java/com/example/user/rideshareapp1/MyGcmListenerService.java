@@ -56,6 +56,8 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
+        String info = data.getString("ride");
+
         // [START_EXCLUDE]
         /**
          * Production applications would usually process the message here.
@@ -68,7 +70,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(info);
         // [END_EXCLUDE]
     }
     // [END receive_message]
