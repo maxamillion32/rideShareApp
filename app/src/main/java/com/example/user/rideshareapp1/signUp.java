@@ -20,9 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.securepreferences.SecurePreferences;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -37,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,6 +110,8 @@ public class signUp extends Activity {
                                 mInformationTextView.setText("It worked!");
 
                                 Intent i = new Intent(that,MyGcmListenerService.class);
+
+                                //i.setAction("com.google.android.c2dm.intent.RECEIVE");
 
                                 startService(i);
 
@@ -228,6 +233,7 @@ public class signUp extends Activity {
         private String email;
         private String login;
         private String id;
+        private String token;
 
         public signUpClass(String name, String email, String login){
             this.name = name;
@@ -254,15 +260,14 @@ public class signUp extends Activity {
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
 
-            SharedPreferences sharedPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
 
-            String token = sharedPreferences.getString("token", "fail");
+            String phoneToken = sharedPreferences.getString("token", "fail");
 
             nameValuePair.add(new BasicNameValuePair("login", login));
             nameValuePair.add(new BasicNameValuePair("email", email));
             nameValuePair.add(new BasicNameValuePair("name",name));
-            nameValuePair.add(new BasicNameValuePair("token",token));
+            nameValuePair.add(new BasicNameValuePair("token",phoneToken));
 
             //Encoding POST data
             try {
@@ -275,7 +280,7 @@ public class signUp extends Activity {
             try {
                 HttpResponse response = httpClient.execute(httpPost);
 
-                id=parseResponse(response);
+                token =parseResponse(response);
 
                 return true;
 
@@ -294,14 +299,24 @@ public class signUp extends Activity {
             if (success){
 
                 showProgress(false);
+
                 Intent intent = new Intent(signUp.this, dashboard.class);
 
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
 
-                sharedPreferences.edit().putInt("login",Integer.parseInt(id)).commit();
+                try {
+                    token = URLEncoder.encode(token, "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    Toast.makeText(that,"something went wrong" ,Toast.LENGTH_LONG);
+                    return;
+                }
 
-                intent.putExtra("login", Integer.parseInt(id));
+                if(sharedPreferences.getBoolean("remember",false))
+                    sharedPreferences.edit().putString("token",token).apply();
+
+                intent.putExtra("token", token);
+
+                intent.putExtra("name", name);
 
                 startActivity(intent);
             }
@@ -317,8 +332,8 @@ public class signUp extends Activity {
 
             String line = "";
             String data = "";
-            try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+
                 while ((line = br.readLine()) != null) {
 
                     data += line;

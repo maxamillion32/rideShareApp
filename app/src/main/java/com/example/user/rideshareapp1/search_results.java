@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.securepreferences.SecurePreferences;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -38,8 +41,6 @@ import java.util.List;
 public class search_results extends ActionBarActivity {
 
     String searchString;
-
-    int login;
 
     View searchResultsView;
     View searchResultsProgress;
@@ -75,8 +76,6 @@ public class search_results extends ActionBarActivity {
 
         rides = new ArrayList<>();
 
-        login = getIntent().getExtras().getInt("login");
-
         searchString = getIntent().getStringExtra("search");
 
         searchResultsView = findViewById(R.id.searchResultsView);
@@ -98,7 +97,12 @@ public class search_results extends ActionBarActivity {
 
                 Ride picked = rides.get(position);
 
-                intent.putExtra("login",login);
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
+
+                //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+                //if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+                intent.putExtra("token",getIntent().getExtras().getString("token"));
 
                 intent.putExtra("infoSearch", picked.toString());
 
@@ -205,9 +209,19 @@ public class search_results extends ActionBarActivity {
 
             List<NameValuePair> urlParam = new LinkedList<NameValuePair>();
 
+            String urlToken;
+
+           // SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                urlToken = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+                urlToken = getIntent().getExtras().getString("token");
+
             urlParam.add(new BasicNameValuePair("origin", origin));
             urlParam.add(new BasicNameValuePair("dest", dest ));
             urlParam.add(new BasicNameValuePair("date", date));
+            urlParam.add(new BasicNameValuePair("token", urlToken));
 
             String paramString = URLEncodedUtils.format(urlParam, "utf-8");
 
@@ -237,14 +251,14 @@ public class search_results extends ActionBarActivity {
 
             String line="";
             String data="";
-            try{
-                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+
                 while((line=br.readLine())!=null){
 
                     data+=line;
                 }
 
-                JSONArray arr = new JSONArray(data);
+                JSONArray  arr = new JSONArray(data);
 
                 for (int i=0;i<arr.length();i++){
                     JSONObject singleRide = arr.getJSONObject(i);

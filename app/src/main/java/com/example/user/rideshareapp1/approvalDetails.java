@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.securepreferences.SecurePreferences;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -19,6 +21,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class approvalDetails extends ActionBarActivity {
 
@@ -28,8 +32,6 @@ public class approvalDetails extends ActionBarActivity {
 
     Button approve;
     Button reject;
-
-    int login;
 
     Approve app;
 
@@ -49,11 +51,6 @@ public class approvalDetails extends ActionBarActivity {
 
         name.setText(app.getName());
         dest.setText(app.getDest());
-
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        login = sharedPreferences.getInt("login", 0);
 
         approve.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,8 +89,28 @@ public class approvalDetails extends ActionBarActivity {
 
             HttpClient client = new DefaultHttpClient();
 
+            //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+            String urlName;
+            String urlToken;
+
+            urlName = getIntent().getExtras().getString("name");
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                urlToken = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            urlToken = getIntent().getExtras().getString("token");
+
+            try {
+                urlName = URLEncoder.encode(urlName, "utf-8");
+                urlToken = URLEncoder.encode(urlToken, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                return false;
+            }
+
             HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/approve?status=" + approved.toString()
-                                    + "&ride_id=" + app.getRideId() + "&pass_id=" + app.getPassId() );
+                                    + "&ride_id=" + app.getRideId() + "&pass_id=" +
+                                    app.getPassId() +"&name=" + urlName + "&token=" + urlToken);
             // replace with your url
 
             HttpResponse response;
@@ -126,6 +143,15 @@ public class approvalDetails extends ActionBarActivity {
                 Intent intent = new Intent();
 
                 intent.putExtra("approve",true);
+
+                intent.putExtra("token", getIntent().getExtras().getString("token"));
+
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
+
+               // SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+                //if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+                //    intent.putExtra("token",getIntent().getExtras().getString("token"));
 
                 setResult(RESULT_OK, intent);
 

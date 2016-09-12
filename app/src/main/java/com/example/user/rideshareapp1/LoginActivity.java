@@ -25,8 +25,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.securepreferences.SecurePreferences;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -37,11 +41,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +56,7 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends Activity {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -64,7 +71,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -76,8 +83,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        mEmailView = (EditText) findViewById(R.id.email);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -103,12 +109,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
 
-    private void populateAutoComplete() {
-        getLoaderManager().initLoader(0, null, this);
-    }
+        SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
 
+        if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) ){
+
+            verifyToken verifyToken = new verifyToken(sharedPreferences.getString("token","aaaaaaa"));
+
+            showProgress(true);
+
+            verifyToken.execute();
+        }
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -199,60 +211,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         }
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -262,7 +220,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         private final String mEmail;
         private final String mPassword;
         private boolean dataBase;
-        private int login = -1;
+        private String name;
+        private String token;
+        HttpResponse response;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -296,8 +256,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 String line="";
                 String data="";
-                try{
-                    BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                try (BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+
                     while((line=br.readLine())!=null){
 
                         data+=line;
@@ -324,7 +284,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/verify?login=" + mEmail);
             // replace with your url
 
-            HttpResponse response;
             try {
                 response = client.execute(request);
 
@@ -332,7 +291,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 String data = parseResponse(response);
 
-                login = (data.equals("false") ? -1 : Integer.parseInt(data));
+                if(data.equals("false")){
+                    name = "";
+                }else {
+                    String [] parts = data.split("`");
+                    name = parts[0];
+                    token = parts[1];
+                }
+
+                dataBase = !data.equals("false");
 
                 return !data.equals("false");
 
@@ -349,8 +316,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             String line = "";
             String data = "";
-            try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+
                 while ((line = br.readLine()) != null) {
 
                     data += line;
@@ -382,13 +349,38 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             if (success) {
 
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
 
-                sharedPreferences.edit().putInt("login",login).commit();
+                CheckBox remember = (CheckBox) findViewById(R.id.remember);
 
                 Intent intent =new Intent(that, (dataBase) ? dashboard.class : signUp.class);
-                intent.putExtra("login",(dataBase) ? login : mEmail);
+
+                intent.putExtra("name",name);
+
+                if(dataBase) {
+
+                    try {
+                        token = URLEncoder.encode(token, "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        Toast.makeText(that, "something went wrong", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }else{
+                    token="default";
+                }
+
+                if(remember.isChecked()){
+                    sharedPreferences.edit().putString("token",token).apply();
+                    sharedPreferences.edit().putBoolean("remember",true).apply();
+                }
+                else{
+                    sharedPreferences.edit().putBoolean("remember",false).apply();
+                }
+
+                intent.putExtra("token",token);
+
+                intent.putExtra("login",mEmail);
+
                 startActivity(intent);
 
             } else {
@@ -402,6 +394,82 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    public class verifyToken extends AsyncTask<Void, Void, Boolean> {
+
+        private final String token;
+        private String data;
+
+        verifyToken(String token) {
+            this.token = token;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/checkToken?token=" + token);
+
+            try {
+                HttpResponse response = client.execute(request);
+
+                String line="";
+                data="";
+
+                try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+                    while((line=br.readLine())!=null){
+
+                        data+=line;
+                    }
+                    Log.i("RESPONSE",Integer.toString(data.length()));
+                }
+                catch(Exception e){
+                    return false;
+                }
+
+                return !data.equals("fail");
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                try{
+
+                    JSONObject object = new JSONObject(data);
+
+                    Intent intent =new Intent(that,dashboard.class);
+
+                    intent.putExtra("name",object.getString("name"));
+
+                    intent.putExtra("token",token);
+
+                    showProgress(false);
+
+                    startActivity(intent);
+
+                }catch (JSONException e){
+                    showProgress(false);
+                    Toast.makeText(that,"Failed to auth",Toast.LENGTH_LONG).show();
+                }
+
+            } else {
+                showProgress(false);
+                Toast.makeText(that,"Failed to auth",Toast.LENGTH_LONG).show();
+            }
+        }
+
     }
 }
 

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.securepreferences.SecurePreferences;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -38,7 +41,6 @@ import java.util.List;
 
 public class share_ride_post extends Activity {
 
-    private int login;
     private TextView dateView;
     private TextView timeView;
     private Spinner origin,dest,rideType;
@@ -51,8 +53,6 @@ public class share_ride_post extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_ride_post);
-
-        login = getIntent().getExtras().getInt("login");
 
         rideType = (Spinner) findViewById(R.id.rideType);
         origin = (Spinner) findViewById(R.id.row_origin);
@@ -133,7 +133,7 @@ public class share_ride_post extends Activity {
                 }
 
 
-                PostRide post = new PostRide(login,rideType.getSelectedItem().toString(),
+                PostRide post = new PostRide(rideType.getSelectedItem().toString(),
                         origin.getSelectedItem().toString(),
                         dest.getSelectedItem().toString(),dateView.getText().toString(),
                         timeStart,timeEnd,Integer.parseInt(capacity.getText().toString()),
@@ -253,7 +253,6 @@ public class share_ride_post extends Activity {
 
     class PostRide extends AsyncTask<Void, Void, Boolean> {
 
-        private int userID;
         private String type;
         private String origin;
         private String dest;
@@ -263,8 +262,7 @@ public class share_ride_post extends Activity {
         private int capacity;
         private String comments;
 
-        public PostRide(int userID,String type,String origin, String dest, String date, String timeStart, String timeEnd, int capacity,String comments){
-            this.userID = userID;
+        public PostRide(String type,String origin, String dest, String date, String timeStart, String timeEnd, int capacity,String comments){
             this.type = type;
             this.origin = origin;
             this.dest = dest;
@@ -286,11 +284,19 @@ public class share_ride_post extends Activity {
             // replace with your url
             HttpPost httpPost = new HttpPost("https://rideshare-server-yosef456.c9users.io/newride");
 
-
             //Post Data
             List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(7);
 
-            nameValuePair.add(new BasicNameValuePair("userID", login + ""));
+            //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+            String urlToken;
+//
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                urlToken = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+                urlToken = getIntent().getExtras().getString("token");
+
+            nameValuePair.add(new BasicNameValuePair("token", urlToken));
             nameValuePair.add(new BasicNameValuePair("type", type));
             nameValuePair.add(new BasicNameValuePair("origin", origin));
             nameValuePair.add(new BasicNameValuePair("dest", dest));
@@ -314,8 +320,8 @@ public class share_ride_post extends Activity {
 
                 String line="";
                 String data="";
-                try{
-                    BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+
                     while((line=br.readLine())!=null){
 
                         data+=line;
@@ -343,7 +349,14 @@ public class share_ride_post extends Activity {
             if (success){
                 Intent intent = new Intent(share_ride_post.this, my_rides.class);
 
-                intent.putExtra("login", login);
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
+
+                intent.putExtra("token", getIntent().getExtras().getString("token"));
+
+//                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+//                if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+//                    intent.putExtra("token",getIntent().getExtras().getString("token"));
 
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -354,11 +367,6 @@ public class share_ride_post extends Activity {
 
                 error.setText("An error has occurred");
             }
-
-        }
-
-        @Override
-        protected void onCancelled() {
 
         }
 

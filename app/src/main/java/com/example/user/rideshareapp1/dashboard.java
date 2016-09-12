@@ -2,16 +2,20 @@ package com.example.user.rideshareapp1;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import com.securepreferences.SecurePreferences;
 
 
 public class dashboard extends Activity {
 
-    private int login;
+    String token = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,19 +23,30 @@ public class dashboard extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        login = getIntent().getExtras().getInt("login");
-
         Button share = (Button) findViewById(R.id.share_button);
-        //Button driver = (Button) findViewById(R.id.driver_button);
         Button myRides = (Button) findViewById(R.id.myrides_button);
         Button search = (Button) findViewById(R.id.search_button);
         Button approve = (Button) findViewById(R.id.dashboard_approve);
+        Button logOut = (Button) findViewById(R.id.log_out);
+
+        TextView welcome = (TextView) findViewById(R.id.welcome);
+
+        //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+        //if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+        token = getIntent().getExtras().getString("token");
+
+        welcome.setText("Welcome, " + getIntent().getExtras().getString("name"));
 
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,share_ride_post.class);
-                intent.putExtra("login",login);
+
+                if(token!=null)
+                    intent.putExtra("token",token);
+
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
 
                 startActivity(intent);
             }
@@ -41,8 +56,11 @@ public class dashboard extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,approve_ride.class);
-                intent.putExtra("login",login);
 
+                if(token!=null)
+                    intent.putExtra("token",token);
+
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
                 startActivity(intent);
             }
         });
@@ -51,8 +69,11 @@ public class dashboard extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,my_rides.class);
-                intent.putExtra("login",login);
 
+                if(token!=null)
+                    intent.putExtra("token",token);
+
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
                 startActivity(intent);
             }
         });
@@ -61,9 +82,24 @@ public class dashboard extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(dashboard.this,search_form.class);
-                intent.putExtra("login",login);
 
+                if(token!=null)
+                    intent.putExtra("token",token);
+
+                intent.putExtra("name",getIntent().getExtras().getString("name"));
                 startActivity(intent);
+            }
+        });
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+                sharedPreferences.edit().clear().apply();
+
+                finish();
             }
         });
 

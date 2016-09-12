@@ -3,9 +3,10 @@
     package="com.example.user.rideshareapp1">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
+    <!--<uses-permission android:name="android.permission.READ_PROFILE" />-->
+    <!--<uses-permission android:name="android.permission.READ_CONTACTS" />-->
+    <!--<uses-permission android:name="android.permission.WRITE_CONTACTS" />-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -25,31 +26,34 @@
         </activity>
         <activity
             android:name=".signUp"
-            android:label="@string/title_activity_sign_up" />
+            android:label="Sign Up"
+            android:noHistory="true"/>
         <activity
             android:name=".dashboard"
-            android:label="@string/title_activity_dashboard" />
+            android:label="Dashboard" />
         <activity
             android:name=".share_ride_post"
-            android:label="@string/title_activity_share_ride_post" />
+            android:label="Post Ride"
+            android:noHistory="true"/>
         <activity
             android:name=".driver_post_ride"
             android:label="@string/title_activity_driver_post_ride" />
         <activity
             android:name=".my_rides"
-            android:label="@string/title_activity_my_rides" />
+            android:label="My Rides" />
         <activity
             android:name=".search_form"
-            android:label="@string/title_activity_search_form" />
+            android:label="Search"
+            android:noHistory="true"/>
         <activity
             android:name=".search_results"
-            android:label="@string/title_activity_search_results" />
+            android:label="Search Result" />
         <activity
             android:name=".ride_details"
-            android:label="@string/title_activity_ride_details" />
+            android:label="Ride Details" />
         <activity
             android:name=".approve_ride"
-            android:label="@string/title_activity_approve_ride" />
+            android:label="Approve Ride" />
 
         <!-- [START gcm_receiver] -->
         <receiver
@@ -67,7 +71,7 @@
 
         <!-- [START gcm_listener] -->
         <service
-            android:name=".MyGcmListenerService"
+            android:name="com.example.user.rideshareapp1.MyGcmListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -76,7 +80,7 @@
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name=".MyInstanceIDListenerService"
+            android:name="com.example.user.rideshareapp1.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -85,17 +89,18 @@
         <!-- [END instanceId_listener] -->
         <service
             android:name=".RegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false"/>
 
         <activity
             android:name=".RegisteringToken"
             android:label="@string/title_activity_registering_token" />
         <activity
             android:name=".approvalDetails"
-            android:label="@string/title_activity_approval_details"></activity>
+            android:label="@string/title_activity_approval_details"/>
         <activity
             android:name=".CharRoom"
-            android:label="@string/title_activity_char_room"></activity>
+            android:label="Chat Room"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

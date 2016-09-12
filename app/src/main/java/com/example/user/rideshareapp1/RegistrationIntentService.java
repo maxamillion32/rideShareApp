@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.securepreferences.SecurePreferences;
 
 import java.io.IOException;
 
@@ -72,8 +73,7 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
 
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
 
         sharedPreferences.edit().putString("token",token).commit();
 

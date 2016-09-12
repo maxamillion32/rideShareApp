@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +16,8 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.securepreferences.SecurePreferences;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,16 +35,12 @@ public class search_form extends ActionBarActivity {
 
     int year,month,day,hour,minute;
 
-    int login;
-
     Spinner origin,dest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_form);
-
-        login = getIntent().getExtras().getInt("login");
 
         origin = (Spinner) findViewById(R.id.row_origin);
         dest = (Spinner) findViewById(R.id.row_dest);
@@ -75,7 +74,14 @@ public class search_form extends ActionBarActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(search_form.this, search_results.class);
 
-                intent.putExtra("login", login);
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
+
+                intent.putExtra("token", getIntent().getExtras().getString("token"));
+
+//                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+//                if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+//                    intent.putExtra("token",getIntent().getExtras().getString("token"));
 
                 intent.putExtra("search", origin.getSelectedItem().toString() + "_" + dest.getSelectedItem().toString() + "_"
                 + dateView.getText().toString() + "_" + timeStart + "_" + timeEnd);

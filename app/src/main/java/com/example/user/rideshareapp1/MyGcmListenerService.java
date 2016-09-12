@@ -25,8 +25,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmListenerService;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -43,20 +48,39 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
+        //TODO find a way to find if it is chat and store it in the file, create a notification
         if(android.os.Debug.isDebuggerConnected())
             android.os.Debug.waitForDebugger();
 
         String message = data.getString("message");
-        Log.i(TAG, "From: " + from);
-        Log.i(TAG, "Message: " + message);
 
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
-        } else {
-            // normal downstream message.
+        String id;
+
+        if(data.containsKey("topic")) {
+
+            id = data.getString("ride");
+
+            try(FileOutputStream fOut = openFileOutput("chat_"+ id + ".txt",
+                    MODE_WORLD_READABLE | MODE_APPEND )){
+
+                OutputStreamWriter osw = new OutputStreamWriter(fOut);
+
+                osw.write(data.getString("name") + ":" + data.getString("message") + "`");
+                osw.flush();
+                osw.close();
+
+            }catch (IOException e){
+                Toast.makeText(this,"Failed to open chat file from notification",Toast.LENGTH_LONG).show();
+            }
+
+        }
+        else{
+
+            sendNotification(data.getString("title") + "`" + data.getString("name") + "`" +  data.getString("message"));
         }
 
-        String info = data.getString("ride");
+        Log.i(TAG, "From: " + from);
+        Log.i(TAG, "Message: " + message);
 
         // [START_EXCLUDE]
         /**
@@ -70,7 +94,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(info);
+
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -81,18 +105,19 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message) {
+
+        String [] parts = message.split("`");
+
         Intent intent = new Intent(this, approve_ride.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Log.i(TAG,"check:"  + message);
-
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_logo_web)
-                .setContentTitle("GCM Message")
-                .setContentText(message)
+                .setContentTitle(parts[0])
+                .setContentText(parts[1] + ":" + parts[2])
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

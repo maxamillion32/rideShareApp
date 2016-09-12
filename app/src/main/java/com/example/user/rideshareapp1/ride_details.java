@@ -5,9 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.securepreferences.SecurePreferences;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -23,8 +27,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 
 public class ride_details extends Activity {
@@ -37,11 +44,8 @@ public class ride_details extends Activity {
     View rideDetailView;
     View rideDetailProgress;
 
-    int login;
     int mode;
     Ride ride;
-
-    char status;
 
     Activity that = this;
 
@@ -76,15 +80,13 @@ public class ride_details extends Activity {
             details = getIntent().getStringExtra("infoMyRide").split("_");
         }
 
-        login = getIntent().getExtras().getInt("login");
-
         ride = new Ride(Integer.parseInt(details[0]), Integer.parseInt(details[1]),
                 details[2], details[3],
                 details[4], details[5], details[6],
                 details[7], details[8], details[9], Integer.parseInt(details[10]),
                 Integer.parseInt(details[11]),details[12],details[13]);
 
-        if (ride.getDriver() == login){
+        if (ride.getName().equals(getIntent().getExtras().getString("name"))){
 
             cancel.setVisibility(View.GONE);
             join.setVisibility(View.GONE);
@@ -105,7 +107,7 @@ public class ride_details extends Activity {
         TextView type = (TextView) findViewById(R.id.details_type);
 
         name.setText("Name:" + ride.getName());
-        capacity.setText("Spots left:" +(ride.getCapacity()- ride.getSpotTaken()));
+        capacity.setText("Spots taken:" +ride.getSpotTaken() + "/" + ride.getCapacity());
         type.setText("Type:" + ride.getType());
 
         TextView origin = (TextView) findViewById(R.id.details_origin);
@@ -162,6 +164,15 @@ public class ride_details extends Activity {
                 Intent intent = new Intent(ride_details.this, CharRoom.class);
 
                 intent.putExtra("rideId", ride.getId());
+
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
+
+                intent.putExtra("token", getIntent().getExtras().getString("token"));
+
+//                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+////                if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+////                    intent.putExtra("token",getIntent().getExtras().getString("token"));
 
                 startActivity(intent);
             }
@@ -242,8 +253,19 @@ public class ride_details extends Activity {
 
             HttpClient client = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/deleteride?id=" + ride);
+            String token;
+
+            //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                token = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            token = getIntent().getExtras().getString("token");
+
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/deleteride?ride_id=" + ride + "&token=" + token);
             // replace with your url
+
+            (new File("chat_"+ ride + ".txt")).delete();
 
             HttpResponse response;
             try {
@@ -266,8 +288,8 @@ public class ride_details extends Activity {
 
             String line="";
             String data="";
-            try{
-                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+
                 while((line=br.readLine())!=null){
 
                     data+=line;
@@ -327,7 +349,25 @@ public class ride_details extends Activity {
 
             HttpClient client = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/request?ride_id=" + ride.getId() + "&pass_id=" + login);
+            //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+            String name;
+
+            String token;
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                token = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            token = getIntent().getExtras().getString("token");
+
+            try {
+                name = URLEncoder.encode(getIntent().getExtras().getString("name"), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                return false;
+            }
+
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/request?ride_id=" + ride.getId() +
+                    "&token=" + token + "&name=" + name);
             // replace with your url
 
             HttpResponse response;
@@ -397,8 +437,17 @@ public class ride_details extends Activity {
 
             HttpClient client = new DefaultHttpClient();
 
+            String token;
+
+//            SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                token = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            token = getIntent().getExtras().getString("token");
+
             HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/getstatus?ride_id=" + ride.getId()
-                        + "&id=" + login);
+                        + "&token=" + token);
             // replace with your url
 
             HttpResponse response;
@@ -456,11 +505,19 @@ public class ride_details extends Activity {
 
                     ((TextView)findViewById(R.id.rideDetailError)).setText("Waiting approval");
 
+                }else if(status == 'r'){
+                    delete.setVisibility(View.GONE);
+                    join.setVisibility(View.GONE);
+                    cancel.setVisibility(View.GONE);
+                    chat.setVisibility(View.GONE);
+
+                    ((TextView)findViewById(R.id.rideDetailError)).setText("Ride rejected");
+
                 }
                 else {
                     showProgress(false);
 
-                    Toast.makeText(that, "An error has occurred", Toast.LENGTH_LONG);
+                    Toast.makeText(that, "An error has occurred", Toast.LENGTH_LONG).show();
 
                     finish();
                 }
@@ -489,9 +546,27 @@ public class ride_details extends Activity {
 
             HttpClient client = new DefaultHttpClient();
 
+//            SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+            String name,token;
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                token = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            token = getIntent().getExtras().getString("token");
+
+            try {
+                name = URLEncoder.encode(getIntent().getExtras().getString("name"), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                return false;
+            }
+
+
             HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/cancelride?ride_id=" + ride.getId()
-                            + "&pass_id=" + login);
+                            + "&token=" + token + "&name=" + name);
             // replace with your url
+
+            (new File("chat_"+ ride.getId() + ".txt")).delete();
 
             HttpResponse response;
             try {

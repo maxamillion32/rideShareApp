@@ -17,12 +17,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.securepreferences.SecurePreferences;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,8 +43,6 @@ public class approve_ride extends ActionBarActivity {
     ListView list;
 
     approveAdapter adapter;
-
-    int login;
 
     Activity that = this;
 
@@ -61,11 +62,6 @@ public class approve_ride extends ActionBarActivity {
 
         list.setAdapter(adapter);
 
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        login = sharedPreferences.getInt("login", 0);
-
         showProgress(true);
 
         ApproveList approveList = new ApproveList();
@@ -80,7 +76,12 @@ public class approve_ride extends ActionBarActivity {
 
                 Approve picked = (Approve) approve.get(i);
 
-                intent.putExtra("login",login);
+//                SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+//                if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+                intent.putExtra("token",getIntent().getExtras().getString("token"));
+
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
 
                 intent.putExtra("infoApprove", picked.toString());
 
@@ -157,7 +158,16 @@ public class approve_ride extends ActionBarActivity {
 
             HttpClient client = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/getpending?id=" + login);
+            String token;
+
+//            SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+//
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                token = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            token = getIntent().getExtras().getString("token");
+
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/getpending?token=" + token);
             // replace with your url
 
             HttpResponse response;
@@ -181,15 +191,14 @@ public class approve_ride extends ActionBarActivity {
 
             String line="";
             String data="";
-            try{
-                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
                 while((line=br.readLine())!=null){
 
                     data+=line;
                 }
                 Log.i("RESPONSE", data.length() + "");
 
-                JSONArray arr = new JSONArray(data);
+                JSONArray  arr = new JSONArray(data);
 
                 Approve.getFromString(arr,approve);
 
@@ -214,7 +223,7 @@ public class approve_ride extends ActionBarActivity {
                 showProgress(false);
 
                 Toast.makeText(that, "An error has occurred",
-                        Toast.LENGTH_LONG);
+                        Toast.LENGTH_LONG).show();
             }
 
         }

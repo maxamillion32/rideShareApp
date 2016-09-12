@@ -125,6 +125,19 @@
                 android:layout_margin="10dp"
                 android:gravity="fill" />
 
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -210,13 +223,13 @@
                 android:background="#ea1313"
                 android:textColor="#ffffff"
                 android:layout_margin="10dp" />
-        </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chat Room"
-            android:id="@+id/details_chat" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="Chat Room"
+                android:id="@+id/details_chat" />
+        </LinearLayout>
 
     </LinearLayout>
 

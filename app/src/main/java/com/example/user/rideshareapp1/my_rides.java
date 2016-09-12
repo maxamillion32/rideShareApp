@@ -2,6 +2,7 @@ package com.example.user.rideshareapp1;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.securepreferences.SecurePreferences;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -32,8 +36,9 @@ public class my_rides extends Activity {
     ArrayList<Ride> rides;
     ListView list;
     ProgressBar bar;
-    int login;
     rideAdapter adapter;
+
+    Activity that = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +49,6 @@ public class my_rides extends Activity {
 
         list = (ListView) findViewById(R.id.myRides);
         bar = (ProgressBar) findViewById(R.id.progressBar);
-
-        login = getIntent().getExtras().getInt("login");
 
         adapter = new rideAdapter(my_rides.this,rides);
 
@@ -59,7 +62,12 @@ public class my_rides extends Activity {
 
                 Ride picked = rides.get(position);
 
-                intent.putExtra("login", login);
+                //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+                //if(!sharedPreferences.contains("remember") || !sharedPreferences.getBoolean("remember",false) )
+                intent.putExtra("token",getIntent().getExtras().getString("token"));
+
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
 
                 intent.putExtra("infoMyRide", picked.toString());
 
@@ -68,7 +76,7 @@ public class my_rides extends Activity {
             }
         });
 
-        getMyRides getStuff = new getMyRides(login,rides,list,adapter,bar);
+        getMyRides getStuff = new getMyRides(rides,list,adapter,bar);
 
         getStuff.execute((Void) null);
     }
@@ -85,7 +93,7 @@ public class my_rides extends Activity {
 
         list.setAdapter(adapter);
 
-        getMyRides getStuff = new getMyRides(login,rides,list,adapter,bar);
+        getMyRides getStuff = new getMyRides(rides,list,adapter,bar);
 
         getStuff.execute((Void) null);
     }
@@ -109,7 +117,7 @@ public class my_rides extends Activity {
 
             list.setAdapter(adapter);
 
-            getMyRides getStuff = new getMyRides(login, rides, list, adapter, bar);
+            getMyRides getStuff = new getMyRides(rides, list, adapter, bar);
 
             getStuff.execute((Void) null);
         }
@@ -138,14 +146,13 @@ public class my_rides extends Activity {
     }
 
     class getMyRides extends AsyncTask<Void, Void, Boolean> {
-        int login;
+
         ArrayList<Ride> myRides;
         ListView list;
         rideAdapter adapter;
         ProgressBar bar;
 
-        public getMyRides(int login, ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
-            this.login=login;
+        public getMyRides( ArrayList<Ride> myRides, ListView list,rideAdapter adapter,ProgressBar bar){
 
             this.myRides= myRides;
 
@@ -162,8 +169,17 @@ public class my_rides extends Activity {
             if(android.os.Debug.isDebuggerConnected())
                 android.os.Debug.waitForDebugger();
 
+            String urlToken;
+
+            //SharedPreferences sharedPreferences = new SecurePreferences(getBaseContext());
+
+//            if(sharedPreferences.contains("remember") && sharedPreferences.getBoolean("remember",false) )
+//                urlToken = sharedPreferences.getString("token","aaaaaaaaaaaaaa");
+//            else
+            urlToken = getIntent().getExtras().getString("token");
+
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/showAll?id=" + login);
+            HttpGet request = new HttpGet("https://rideshare-server-yosef456.c9users.io/showAll?token=" + urlToken);
             // replace with your url
 
             HttpResponse response;
@@ -189,13 +205,13 @@ public class my_rides extends Activity {
 
             String line="";
             String data="";
-            try{
-                BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            try(BufferedReader br=new BufferedReader(new InputStreamReader(response.getEntity().getContent()))){
+
                 while((line=br.readLine())!=null){
 
                     data+=line;
                 }
-                JSONArray arr = new JSONArray(data);
+                JSONArray  arr = new JSONArray(data);
 
                 for (int i=0;i<arr.length();i++){
                     JSONObject singleRide = arr.getJSONObject(i);
@@ -227,6 +243,11 @@ public class my_rides extends Activity {
             if (success){
                 adapter.notifyDataSetChanged();
                 bar.setVisibility(View.GONE);
+            }
+            else{
+                bar.setVisibility(View.GONE);
+
+                Toast.makeText(that,"An error has occurred",Toast.LENGTH_LONG).show();
             }
 
         }
